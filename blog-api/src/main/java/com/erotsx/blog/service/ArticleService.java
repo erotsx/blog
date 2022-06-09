@@ -7,4 +7,8 @@ import java.util.List;
 
 public interface ArticleService {
     List<ArticleVo> getArticles(PageParams pageParams);
+
+    List<ArticleVo> getHotArticles(int limit);
+
+    List<ArticleVo> getNewArticles(int limit);
 }

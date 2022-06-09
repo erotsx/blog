@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--MyBatis配置文件-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erotsx.blog.dao.TagMapper">
+
+    <select id="findTagsByArticleId" parameterType="long" resultType="com.erotsx.blog.entity.Tag">
+        select id ,avatar,tag_name as tagName
+        from blog_tag
+        <where>
+            id in
+            (select tag_id from blog_article_tag where article_id = #{articleId})
+        </where>
+    </select>
+    <select id="findTagIdList" resultType="java.lang.Integer">
+        select tag_id
+        from blog_article_tag at
+        group by tag_id
+        order by COUNT(1) desc limit #{limit}
+    </select>
+    <select id="findTagsByTagIdList" resultType="com.erotsx.blog.entity.Tag">
+        select id ,avatar,tag_name from blog_tag where id in
+        <foreach collection="tagIdList" item="tagId" separator="," open="(" close=")">
+            #{tagId}
+        </foreach>
+    </select>
+</mapper>
