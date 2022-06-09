@@ -19,7 +19,7 @@ public class ArticleController {
      * @param pageParams 分页参数
      * @return 根据是否置顶，创建时间返回文章列表
      */
-    @PostMapping("getArticles")
+    @GetMapping("getArticles")
     public List<ArticleVo> getArticles(@RequestBody PageParams pageParams) {
         return articleService.getArticles(pageParams);
     }
