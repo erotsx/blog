@@ -3,6 +3,7 @@ package com.erotsx.blog.controller;
 import com.erotsx.blog.service.ArticleService;
 import com.erotsx.blog.vo.ArticleVo;
 import com.erotsx.blog.vo.PageParams;
+import com.erotsx.blog.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +41,15 @@ public class ArticleController {
     @GetMapping("getNewArticles")
     public List<ArticleVo> getNewArticles(@RequestParam(defaultValue = "10") int limit) {
         return articleService.getNewArticles(limit);
+    }
+
+    /**
+     * @param id id
+     * @return 文章体
+     */
+    @PostMapping("article/{id}")
+    public Result getArticleById(@PathVariable("id") int id) {
+        return Result.success(articleService.getArticleById(id));
     }
 
 }

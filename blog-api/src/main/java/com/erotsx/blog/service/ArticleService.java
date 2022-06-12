@@ -11,4 +11,6 @@ public interface ArticleService {
     List<ArticleVo> getHotArticles(int limit);
 
     List<ArticleVo> getNewArticles(int limit);
+
+    ArticleVo getArticleById(int id);
 }

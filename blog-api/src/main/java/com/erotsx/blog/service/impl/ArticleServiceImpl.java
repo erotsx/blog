@@ -73,6 +73,12 @@ public class ArticleServiceImpl implements ArticleService {
         return getArticleVoList(articles);
     }
 
+    @Override
+    public ArticleVo getArticleById(int id) {
+
+        return null;
+    }
+
     private List<ArticleVo> getArticleVoList(List<Article> articles) {
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : articles) {

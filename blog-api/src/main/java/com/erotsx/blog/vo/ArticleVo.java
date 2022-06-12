@@ -21,17 +21,17 @@ public class ArticleVo {
 
     private int isTop;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateDate;
 
     private String author;
 
-    //    private ArticleBodyVo body;
-//
+    private ArticleBodyVo body;
+
     private List<TagVo> tags;
-//
-//    private List<CategoryVo> category;
+
+    private CategoryVo category;
 }
