@@ -1,18 +1,17 @@
 package com.erotsx.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.erotsx.blog.dao.ArticleBodyMapper;
 import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.entity.Article;
-import com.erotsx.blog.service.ArticleService;
-import com.erotsx.blog.service.SysUserService;
-import com.erotsx.blog.service.TagService;
-import com.erotsx.blog.vo.ArticleVo;
-import com.erotsx.blog.vo.PageParams;
-import com.erotsx.blog.vo.TagVo;
+import com.erotsx.blog.entity.ArticleBody;
+import com.erotsx.blog.entity.Category;
+import com.erotsx.blog.service.*;
+import com.erotsx.blog.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,6 +30,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private ArticleBodyMapper articleBodyMapper;
+
+    @Resource
+    private CategoryService categoryService;
+
+    @Resource
+    private ThreadService threadService;
 
     @Override
     public List<ArticleVo> getArticles(PageParams pageParams) {
@@ -75,8 +83,27 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleVo getArticleById(int id) {
+        Article article = articleMapper.selectById(id);
+        ArticleVo articleVo = new ArticleVo();
+        BeanUtils.copyProperties(article, articleVo);
+        articleVo.setTags(tagService.findTagsByArticleId(id));
+        articleVo.setBody(getArticleBodyById(id));
+        articleVo.setAuthor(sysUserService.findSysUserById(id).getNickname());
+        Category category = categoryService.getCategoryById(id);
+        CategoryVo categoryVo = new CategoryVo();
+        BeanUtils.copyProperties(category, categoryVo);
+        articleVo.setCategory(categoryVo);
+        threadService.updateViewCount(article);
+        return articleVo;
+    }
 
-        return null;
+    private ArticleBodyVo getArticleBodyById(int id) {
+        LambdaQueryWrapper<ArticleBody> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleBody::getArticleId, id);
+        ArticleBody articleBody = articleBodyMapper.selectOne(queryWrapper);
+        ArticleBodyVo articleBodyVo = new ArticleBodyVo();
+        BeanUtils.copyProperties(articleBody, articleBodyVo);
+        return articleBodyVo;
     }
 
     private List<ArticleVo> getArticleVoList(List<Article> articles) {

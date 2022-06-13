@@ -47,7 +47,7 @@ public class ArticleController {
      * @param id id
      * @return 文章体
      */
-    @PostMapping("article/{id}")
+    @GetMapping("article/{id}")
     public Result getArticleById(@PathVariable("id") int id) {
         return Result.success(articleService.getArticleById(id));
     }

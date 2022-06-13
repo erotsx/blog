@@ -9,17 +9,17 @@ import java.util.List;
 @Data
 public class ArticleVo {
 
-    private int id;
+    private Integer id;
 
     private String title;
 
     private String summary;
 
-    private int commentCounts;
+    private Integer commentCounts;
 
-    private int viewCounts;
+    private Integer viewCounts;
 
-    private int isTop;
+    private Integer isTop;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;

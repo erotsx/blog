@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class Article {
 
-    private int id;
+    private Integer id;
 
     private Date createDate;
 
@@ -17,7 +17,7 @@ public class Article {
 
     private String title;
 
-    private int viewCounts;
+    private Integer viewCounts;
 
     private int isTop;
 

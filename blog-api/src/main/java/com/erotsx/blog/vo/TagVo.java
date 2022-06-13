@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class TagVo {
 
-    private int id;
+    private Integer id;
 
     private String tagName;
 

@@ -8,6 +8,4 @@ public class CategoryVo {
     private Integer id;
 
     private String categoryName;
-
-    private String description;
 }
