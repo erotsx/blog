@@ -1,6 +1,6 @@
 package com.erotsx.blog.vo;
 
-public enum ResultCode {
+public enum ResultCode implements ErrorCode {
     SUCCESS(200, "操作成功"),
     FAILED(500, "操作失败"),
     VALIDATE_FAILED(404, "参数检验失败"),
@@ -15,7 +15,7 @@ public enum ResultCode {
         this.message = message;
     }
 
-    public int getCode() {
+    public long getCode() {
         return code;
     }
 

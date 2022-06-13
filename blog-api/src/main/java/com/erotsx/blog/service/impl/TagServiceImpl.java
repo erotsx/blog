@@ -1,5 +1,6 @@
 package com.erotsx.blog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.dao.TagMapper;
 import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.service.TagService;
@@ -32,6 +33,12 @@ public class TagServiceImpl implements TagService {
             return Collections.emptyList();
         }
         List<Tag> tagList = tagMapper.findTagsByTagIdList(tagIdList);
+        return getTagVoList(tagList);
+    }
+
+    @Override
+    public List<TagVo> getAllTags() {
+        List<Tag> tagList = tagMapper.selectList(new LambdaQueryWrapper<>());
         return getTagVoList(tagList);
     }
 
