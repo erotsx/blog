@@ -2,6 +2,7 @@ package com.erotsx.blog.controller;
 
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.vo.Result;
+import com.erotsx.blog.vo.SysUserVo;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ public class SysUserController {
      * @return 返回用户信息
      */
     @RequestMapping("getUserInfo")
-    public Result getUserInfo(@RequestHeader("Authorization") String token) {
-        return sysUserService.getUserInfo(token);
+    public Result<SysUserVo> getUserInfo(@RequestHeader("Authorization") String token) {
+        return Result.success(sysUserService.getUserInfo(token));
     }
 }

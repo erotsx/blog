@@ -19,8 +19,8 @@ public class AdminController {
      * @return token值
      */
     @PostMapping("login")
-    public Result login(@RequestBody AdminParams adminParams) {
-        return adminService.login(adminParams);
+    public Result<?> login(@RequestBody AdminParams adminParams) {
+        return Result.success(adminService.login(adminParams), "登录成功");
     }
 
     /**
@@ -28,13 +28,14 @@ public class AdminController {
      * @return 登出
      */
     @PostMapping("logout")
-    public Result logout(@RequestHeader("Authorization") String token) {
-        return adminService.logout(token);
+    public Result<?> logout(@RequestHeader("Authorization") String token) {
+        adminService.logout(token);
+        return Result.success(null, "登出成功");
     }
 
     @PostMapping("register")
-    public Result register(@RequestBody AdminParams adminParams) {
-        return adminService.register(adminParams);
+    public Result<?> register(@RequestBody AdminParams adminParams) {
+        return Result.success(adminService.register(adminParams), "注册成功");
     }
 
 }

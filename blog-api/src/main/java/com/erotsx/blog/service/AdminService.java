@@ -1,12 +1,14 @@
 package com.erotsx.blog.service;
 
 import com.erotsx.blog.vo.AdminParams;
-import com.erotsx.blog.vo.Result;
+
+
+import java.util.Map;
 
 public interface AdminService {
-    Result login(AdminParams adminParams);
+    Map<String, String> login(AdminParams adminParams);
 
-    Result logout(String token);
+    void logout(String token);
 
-    Result register(AdminParams adminParams);
+    Map<String,String> register(AdminParams adminParams);
 }

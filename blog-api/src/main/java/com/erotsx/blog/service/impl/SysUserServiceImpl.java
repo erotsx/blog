@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysUser;
+import com.erotsx.blog.exception.Asserts;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.utils.JWTUtils;
 import com.erotsx.blog.vo.Result;
@@ -43,20 +44,20 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public Result getUserInfo(String token) {
+    public SysUserVo getUserInfo(String token) {
         Map<String, Object> map = JWTUtils.checkToken(token);
         if (map == null) {
-            return Result.failed(ResultCode.VALIDATE_FAILED, "token错误");
+            Asserts.fail("token错误");
         }
         log.info(String.valueOf(map));
         String user = redisTemplate.opsForValue().get("TOKEN_" + token);
         if (StringUtils.isBlank(user)) {
-            return Result.failed(ResultCode.VALIDATE_FAILED, "token错误");
+            Asserts.fail("token错误");
         }
         SysUser sysUser = JSON.parseObject(user, SysUser.class);
         SysUserVo sysUserVo = new SysUserVo();
         BeanUtils.copyProperties(sysUser, sysUserVo);
-        return Result.success(sysUserVo);
+        return sysUserVo;
     }
 
     @Override

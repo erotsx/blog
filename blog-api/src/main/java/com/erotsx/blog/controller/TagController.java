@@ -23,15 +23,15 @@ public class TagController {
      * @return 根据带有此标签的数量降序返回标签
      */
     @GetMapping("getHotTags")
-    public List<TagVo> getTags(@RequestParam(defaultValue = "10") int limit) {
-        return tagService.getTags(limit);
+    public Result<List<TagVo>> getTags(@RequestParam(defaultValue = "10") int limit) {
+        return Result.success(tagService.getTags(limit));
     }
 
     /**
      * @return 获取所有标签
      */
     @GetMapping("getAllTags")
-    public Result getAllTags() {
-        return Result.success(tagService.getAllTags()) ;
+    public Result<List<TagVo>> getAllTags() {
+        return Result.success(tagService.getAllTags());
     }
 }
