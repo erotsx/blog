@@ -1,6 +1,7 @@
 package com.erotsx.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.dao.ArticleBodyMapper;
 import com.erotsx.blog.dao.ArticleMapper;
@@ -10,6 +11,7 @@ import com.erotsx.blog.entity.Category;
 import com.erotsx.blog.service.*;
 import com.erotsx.blog.vo.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,23 +43,25 @@ public class ArticleServiceImpl implements ArticleService {
     private ThreadService threadService;
 
     @Override
-    public List<ArticleVo> getArticles(PageParams pageParams) {
-        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+    public PageVo<ArticleVo> getArticles(PageParams pageParams) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Article::getIsTop, Article::getCreateDate);
+        return getArticleVoListByPage(pageParams, queryWrapper);
+    }
+
+    private PageVo<ArticleVo> getArticleVoListByPage(PageParams pageParams, LambdaQueryWrapper<Article> queryWrapper) {
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : articlePage.getRecords()) {
             ArticleVo articleVo = new ArticleVo();
             BeanUtils.copyProperties(article, articleVo);
-            log.info(String.valueOf(article.getId()));
             List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
             articleVo.setAuthor(sysUserService.findSysUserById(article.getAuthorId()).getNickname());
             articleVo.setTags(tags);
             articleVoList.add(articleVo);
         }
-        return articleVoList;
-
+        return new PageVo<>(articleVoList, articlePage.getTotal());
     }
 
     @Override
@@ -95,6 +99,22 @@ public class ArticleServiceImpl implements ArticleService {
         articleVo.setCategory(categoryVo);
         threadService.updateViewCount(article);
         return articleVo;
+    }
+
+    @Override
+    public PageVo<ArticleVo> search(String keyword, String status, String category, PageParams pageParams) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        if (!StringUtils.isBlank(keyword)) {
+            queryWrapper.like(Article::getTitle, keyword);
+        }
+        if (!StringUtils.isBlank(status)) {
+            queryWrapper.eq(Article::getStatus, status);
+        }
+        if (!StringUtils.isBlank(category)) {
+            Category category1 = categoryService.getCategoryByName(category);
+            queryWrapper.eq(Article::getCategoryId, category1.getId());
+        }
+        return getArticleVoListByPage(pageParams, queryWrapper);
     }
 
     private ArticleBodyVo getArticleBodyById(int id) {

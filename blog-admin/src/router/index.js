@@ -51,28 +51,40 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '仪表盘', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/articles',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/articles/list',
+    name: 'Articles',
+    meta: { title: '文章', icon: 'form' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'list',
+        name: 'List',
+        component: () => import('@/views/post/PostList'),
+        meta: { title: '所有文章', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
+        path: 'write',
+        name: 'Write',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        meta: { title: '写文章', icon: 'tree' }
+      },
+      {
+        path: 'categories',
+        name: 'Categories',
+        component: () => import('@/views/categories/index'),
+        meta: { title: '分类目录', icon: '' }
+      },
+      {
+        path: 'tags',
+        name: 'Tags',
+        component: () => import('@/views/tags/index'),
+        meta: { title: '标签', icon: '' }
       }
     ]
   },

@@ -9,4 +9,6 @@ public interface CategoryService {
     Category getCategoryById(int id);
 
     List<CategoryVo> getAllCategories();
+
+    Category getCategoryByName(String category);
 }

@@ -7,6 +7,7 @@ import com.erotsx.blog.service.AdminService;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.utils.JWTUtils;
 import com.erotsx.blog.vo.AdminParams;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 @Transactional
 public class AdminServiceImpl implements AdminService {
 
@@ -32,6 +34,7 @@ public class AdminServiceImpl implements AdminService {
         String account = adminParams.getAccount();
         String password = adminParams.getPassword();
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
+            log.info("account" + account + password);
             Asserts.fail("账号或密码为空");
         }
         SysUser sysUser = sysUserService.findSysUser(account, password);

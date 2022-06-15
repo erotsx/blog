@@ -1,8 +1,10 @@
 package com.erotsx.blog.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.service.ArticleService;
 import com.erotsx.blog.vo.ArticleVo;
 import com.erotsx.blog.vo.PageParams;
+import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,7 @@ public class ArticleController {
      * @return 根据是否置顶，创建时间返回文章列表
      */
     @GetMapping("getArticles")
-    public Result<List<ArticleVo>> getArticles(@RequestBody PageParams pageParams) {
+    public Result<PageVo<ArticleVo>> getArticles(@RequestBody PageParams pageParams) {
         return Result.success(articleService.getArticles(pageParams));
     }
 
@@ -50,6 +52,15 @@ public class ArticleController {
     @GetMapping("article/{id}")
     public Result<ArticleVo> getArticleById(@PathVariable("id") int id) {
         return Result.success(articleService.getArticleById(id));
+    }
+
+    @GetMapping("search")
+    public Result<PageVo<ArticleVo>> search(@RequestParam(required = false) String keyword,
+                                            @RequestParam(required = false) String status,
+                                            @RequestParam(required = false) String category,
+                                            @RequestParam(required = false, defaultValue = "1") int page,
+                                            @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        return Result.success(articleService.search(keyword, status, category, new PageParams(page, pageSize)));
     }
 
 }

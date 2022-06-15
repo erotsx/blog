@@ -35,4 +35,11 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return categoryVoList;
     }
+
+    @Override
+    public Category getCategoryByName(String category) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getCategoryName, category);
+        return categoryMapper.selectOne(queryWrapper);
+    }
 }

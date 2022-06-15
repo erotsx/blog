@@ -19,13 +19,15 @@ public class Article {
 
     private Integer viewCounts;
 
-    private int isTop;
+    private Integer isTop;
 
-    private int authorId;
+    private Integer authorId;
 
-    private int bodyId;
+    private Integer bodyId;
 
-    private int categoryId;
+    private Integer categoryId;
 
-    private int commentCounts;
+    private Integer commentCounts;
+
+    private String status;
 }
