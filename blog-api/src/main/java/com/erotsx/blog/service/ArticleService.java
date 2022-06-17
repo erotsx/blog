@@ -15,9 +15,11 @@ public interface ArticleService {
 
     List<ArticleVo> getNewArticles(int limit);
 
-    ArticleVo getArticleById(int id);
+    ArticleVo getArticleById(Long id);
 
-    List<ArticleVo> findArticlesByTagId(Integer tagId);
+    List<ArticleVo> findArticlesByTagId(Long tagId);
 
-    PageVo<ArticleVo> search(String keyword, String status, Integer tagId, Integer categoryId, PageParams pageParams);
+    PageVo<ArticleVo> search(String keyword, String status, Long tagId, Long categoryId, PageParams pageParams);
+
+    void deleteArticleById(Long id);
 }

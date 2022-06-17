@@ -8,13 +8,18 @@ export function fetchList(query) {
       page: query.page,
       pageSize: query.pageSize,
       tagId: query.tagId,
-      title: query.title,
+      keyword: query.title,
       status: query.status,
       categoryId: query.categoryId
     }
   })
 }
-
+export function removeArticle(id) {
+  return request({
+    url: '/articles/delete/' + id,
+    method: 'delete'
+  })
+}
 export function fetchPv(pv) {
   return request({
     url: '/vue-element-admin/article/pv',

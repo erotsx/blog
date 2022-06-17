@@ -83,7 +83,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleVo getArticleById(int id) {
+    public ArticleVo getArticleById(Long id) {
         Article article = articleMapper.selectById(id);
         ArticleVo articleVo = getArticleVo(article);
         articleVo.setBody(getArticleBodyById(id));
@@ -92,8 +92,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleVo> findArticlesByTagId(Integer tagId) {
-        List<Integer> articleList = articleMapper.findArticleIdsByTagId(tagId);
+    public List<ArticleVo> findArticlesByTagId(Long tagId) {
+        List<Long> articleList = articleMapper.findArticleIdsByTagId(tagId);
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Article::getId, articleList);
         List<Article> articles = articleMapper.selectList(queryWrapper);
@@ -119,7 +119,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PageVo<ArticleVo> search(String keyword, String status, Integer tagId, Integer categoryId, PageParams pageParams) {
+    public PageVo<ArticleVo> search(String keyword, String status, Long tagId, Long categoryId, PageParams pageParams) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         if (!StringUtils.isBlank(keyword)) {
             queryWrapper.like(Article::getTitle, keyword);
@@ -127,8 +127,9 @@ public class ArticleServiceImpl implements ArticleService {
         if (!StringUtils.isBlank(status)) {
             queryWrapper.eq(Article::getStatus, status);
         }
+        queryWrapper.ne(Article::getStatus, "回收站");
         if (tagId != null) {
-            List<Integer> articleList = articleMapper.findArticleIdsByTagId(tagId);
+            List<Long> articleList = articleMapper.findArticleIdsByTagId(tagId);
             queryWrapper.in(Article::getId, articleList);
         }
         if (categoryId != null) {
@@ -137,7 +138,14 @@ public class ArticleServiceImpl implements ArticleService {
         return getArticleVoListByPage(pageParams, queryWrapper);
     }
 
-    private ArticleBodyVo getArticleBodyById(int id) {
+    @Override
+    public void deleteArticleById(Long id) {
+        Article article = articleMapper.selectById(id);
+        article.setStatus("回收站");
+        articleMapper.updateById(article);
+    }
+
+    private ArticleBodyVo getArticleBodyById(Long id) {
         LambdaQueryWrapper<ArticleBody> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ArticleBody::getArticleId, id);
         ArticleBody articleBody = articleBodyMapper.selectOne(queryWrapper);

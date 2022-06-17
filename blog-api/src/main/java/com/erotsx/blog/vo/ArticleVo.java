@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ArticleVo {
 
-    private Integer id;
+    private Long id;
 
     private String title;
 

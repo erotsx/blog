@@ -4,7 +4,7 @@
 
 <mapper namespace="com.erotsx.blog.dao.ArticleMapper">
 
-    <select id="findArticleIdsByTagId" resultType="java.lang.Integer">
+    <select id="findArticleIdsByTagId" resultType="java.lang.Long">
         select article_id
         from blog_article_tag
         where tag_id = #{tagId}

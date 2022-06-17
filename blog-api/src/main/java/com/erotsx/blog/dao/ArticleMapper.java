@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ArticleMapper extends BaseMapper<Article> {
 
-    List<Integer> findArticleIdsByTagId(Integer tagId);
+    List<Long> findArticleIdsByTagId(Long tagId);
 }

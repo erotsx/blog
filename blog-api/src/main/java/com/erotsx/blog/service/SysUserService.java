@@ -5,7 +5,7 @@ import com.erotsx.blog.vo.Result;
 import com.erotsx.blog.vo.SysUserVo;
 
 public interface SysUserService {
-    SysUser findSysUserById(int authorId);
+    SysUser findSysUserById(Long authorId);
 
     SysUser findSysUser(String account, String password);
 

@@ -1,6 +1,5 @@
 package com.erotsx.blog.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.service.ArticleService;
 import com.erotsx.blog.vo.ArticleVo;
 import com.erotsx.blog.vo.PageParams;
@@ -52,19 +51,37 @@ public class ArticleController {
      * @return 文章体
      */
     @GetMapping("article/{id}")
-    public Result<ArticleVo> getArticleById(@PathVariable("id") int id) {
+    public Result<ArticleVo> getArticleById(@PathVariable("id") Long id) {
         return Result.success(articleService.getArticleById(id));
     }
 
+    /**
+     * @param id 删除文章的ID
+     * @return return
+     */
+    @DeleteMapping("delete/{id}")
+    public Result<?> deleteArticleById(@PathVariable("id") Long id) {
+        articleService.deleteArticleById(id);
+        return Result.success(null, "删除成功");
+    }
+
+    /**
+     * @param keyword    关键词
+     * @param status     状态
+     * @param tagId      标签id
+     * @param categoryId 目录id
+     * @param page       page
+     * @param pageSize   pageSize
+     * @return 文章
+     */
     @GetMapping("search")
     public Result<PageVo<ArticleVo>> search(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String status,
-                                            @RequestParam(required = false) Integer tagId,
-                                            @RequestParam(required = false) Integer categoryId,
+                                            @RequestParam(required = false) Long tagId,
+                                            @RequestParam(required = false) Long categoryId,
                                             @RequestParam(required = false, defaultValue = "1") int page,
                                             @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        log.info(keyword+status+tagId+categoryId);
-        return Result.success(articleService.search(keyword, status, tagId,categoryId, new PageParams(page, pageSize)));
+        return Result.success(articleService.search(keyword, status, tagId, categoryId, new PageParams(page, pageSize)));
     }
 
 }

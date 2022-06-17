@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class ArticleBodyVo {
 
-    private Integer id;
+    private Long id;
 
     private String content;
 

@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class Article {
 
-    private Integer id;
+    private Long id;
 
     private Date createDate;
 
@@ -21,11 +21,11 @@ public class Article {
 
     private Integer isTop;
 
-    private Integer authorId;
+    private Long authorId;
 
-    private Integer bodyId;
+    private Long bodyId;
 
-    private Integer categoryId;
+    private Long categoryId;
 
     private Integer commentCounts;
 

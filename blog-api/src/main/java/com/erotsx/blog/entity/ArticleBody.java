@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class ArticleBody {
 
-    private Integer id;
+    private Long id;
 
     private String content;
 
     private String contentHtml;
 
-    private Integer articleId;
+    private Long articleId;
 }

@@ -7,9 +7,11 @@ import com.erotsx.blog.entity.Tag;
 import java.util.List;
 
 public interface TagMapper extends BaseMapper<Tag> {
-    List<Tag> findTagsByArticleId(int id);
+    List<Tag> findTagsByArticleId(Long id);
 
-    List<Integer> findTagIdList(int limit);
+    List<Long> findTagIdList(int limit);
 
-    List<Tag> findTagsByTagIdList(List<Integer> tagIdList);
+    List<Tag> findTagsByTagIdList(List<Long> tagIdList);
+
+    void deleteArticleTagById(Long id);
 }

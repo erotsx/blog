@@ -30,7 +30,7 @@ public class SysUserServiceImpl implements SysUserService {
     private RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public SysUser findSysUserById(int authorId) {
+    public SysUser findSysUserById(Long authorId) {
         return sysUserMapper.selectById(authorId);
     }
 

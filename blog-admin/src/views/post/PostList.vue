@@ -99,14 +99,14 @@
         <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center" />
         <el-table-column label="创建时间" prop="createDate" width="150px" sortable align="center" />
         <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-          <template slot-scope="{row,$index}">
-            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <template v-slot:default="slotProps">
+            <el-button type="primary" size="mini" @click="handleUpdate(slotProps.row)">
               编辑
             </el-button>
-            <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+            <el-button v-if="slotProps.row.status!='draft'" size="mini" @click="handleModifyStatus(slotProps.row,'draft')">
               设置
             </el-button>
-            <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+            <el-button v-if="slotProps.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(slotProps.row)">
               删除
             </el-button>
           </template>
@@ -163,7 +163,7 @@
   </div></template>
 
 <script>
-import {fetchList, fetchPv, createArticle, updateArticle, fetchArticle} from '@/api/article'
+import { fetchList, fetchPv, createArticle, updateArticle, fetchArticle, removeArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -211,9 +211,9 @@ export default {
       category: [],
       publishList: ['已发布', '草稿'],
       params: {
-        title: '',
+        title: null,
         tagId: null,
-        status: '',
+        status: null,
         page: 1,
         categoryId: null,
         pageSize: 10
@@ -263,11 +263,7 @@ export default {
       fetchList(this.params).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.listLoading = false
       })
     },
     handleFilter() {
@@ -279,14 +275,29 @@ export default {
       this.queryList()
     },
     queryList: function() {
-      console.log(this.params)
+      this.listLoading = true
       fetchList(this.params).then(res => {
         this.list = res.data.items
         this.total = res.data.total
+        this.listLoading = false
       }).catch(err => {
         console.log(err)
       })
       this.loading.close()
+    },
+    resetQuery: function() {
+      this.params.title = null
+      this.params.tagId = null
+      this.params.status = null
+      this.params.categoryId = null
+      this.queryList()
+    },
+    onClick: function(row) {
+      if (row.status === '草稿') {
+        this.$message.error('文章暂未发布，无法进行浏览')
+        return false
+      }
+      // window.open(this.BLOG_WEB_URL + 'articles/' + row.id)
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -374,14 +385,23 @@ export default {
         }
       })
     },
-    handleDelete(row, index) {
-      this.$notify({
-        title: 'Success',
-        message: 'Delete Successfully',
-        type: 'success',
-        duration: 2000
+    handleDelete(row) {
+      const id = row.id
+      this.$confirm('此操作将把文章删除, 是否继续?', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(id.type)
+        removeArticle(id).then(res => {
+          this.$message.success('删除文章成功')
+          this.queryList()
+        }).catch(err => {
+          console.log(err)
+        })
+      }).catch(() => {
+        this.$message.info('取消删除')
       })
-      this.list.splice(index, 1)
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
