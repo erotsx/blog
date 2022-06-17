@@ -18,7 +18,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * @return 所以目录
+     * @return 所有目录
      */
     @GetMapping("getAllCategories")
     public Result<List<CategoryVo>> getAllCategories() {

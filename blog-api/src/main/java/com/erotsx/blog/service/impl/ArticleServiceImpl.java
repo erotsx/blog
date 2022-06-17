@@ -8,6 +8,7 @@ import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.entity.Article;
 import com.erotsx.blog.entity.ArticleBody;
 import com.erotsx.blog.entity.Category;
+import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.service.*;
 import com.erotsx.blog.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -54,11 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
         Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : articlePage.getRecords()) {
-            ArticleVo articleVo = new ArticleVo();
-            BeanUtils.copyProperties(article, articleVo);
-            List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
-            articleVo.setAuthor(sysUserService.findSysUserById(article.getAuthorId()).getNickname());
-            articleVo.setTags(tags);
+            ArticleVo articleVo = getArticleVo(article);
             articleVoList.add(articleVo);
         }
         return new PageVo<>(articleVoList, articlePage.getTotal());
@@ -88,21 +85,41 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleVo getArticleById(int id) {
         Article article = articleMapper.selectById(id);
-        ArticleVo articleVo = new ArticleVo();
-        BeanUtils.copyProperties(article, articleVo);
-        articleVo.setTags(tagService.findTagsByArticleId(id));
+        ArticleVo articleVo = getArticleVo(article);
         articleVo.setBody(getArticleBodyById(id));
-        articleVo.setAuthor(sysUserService.findSysUserById(id).getNickname());
-        Category category = categoryService.getCategoryById(id);
-        CategoryVo categoryVo = new CategoryVo();
-        BeanUtils.copyProperties(category, categoryVo);
-        articleVo.setCategory(categoryVo);
         threadService.updateViewCount(article);
         return articleVo;
     }
 
     @Override
-    public PageVo<ArticleVo> search(String keyword, String status, String category, PageParams pageParams) {
+    public List<ArticleVo> findArticlesByTagId(Integer tagId) {
+        List<Integer> articleList = articleMapper.findArticleIdsByTagId(tagId);
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Article::getId, articleList);
+        List<Article> articles = articleMapper.selectList(queryWrapper);
+        List<ArticleVo> articleVoList = new ArrayList<>();
+        for (Article article : articles) {
+            articleVoList.add(getArticleVo(article));
+        }
+        return articleVoList;
+    }
+
+    private ArticleVo getArticleVo(Article article) {
+        ArticleVo articleVo = new ArticleVo();
+        BeanUtils.copyProperties(article, articleVo);
+        List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
+        List<String> tagNames = new ArrayList<>();
+        for (TagVo tagVo : tags) {
+            tagNames.add(tagVo.getTagName());
+        }
+        articleVo.setTags(tagNames);
+        articleVo.setAuthor(sysUserService.findSysUserById(article.getAuthorId()).getNickname());
+        articleVo.setCategoryName(categoryService.getCategoryById(article.getId()).getCategoryName());
+        return articleVo;
+    }
+
+    @Override
+    public PageVo<ArticleVo> search(String keyword, String status, Integer tagId, Integer categoryId, PageParams pageParams) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         if (!StringUtils.isBlank(keyword)) {
             queryWrapper.like(Article::getTitle, keyword);
@@ -110,9 +127,12 @@ public class ArticleServiceImpl implements ArticleService {
         if (!StringUtils.isBlank(status)) {
             queryWrapper.eq(Article::getStatus, status);
         }
-        if (!StringUtils.isBlank(category)) {
-            Category category1 = categoryService.getCategoryByName(category);
-            queryWrapper.eq(Article::getCategoryId, category1.getId());
+        if (tagId != null) {
+            List<Integer> articleList = articleMapper.findArticleIdsByTagId(tagId);
+            queryWrapper.in(Article::getId, articleList);
+        }
+        if (categoryId != null) {
+            queryWrapper.eq(Article::getCategoryId, categoryId);
         }
         return getArticleVoListByPage(pageParams, queryWrapper);
     }

@@ -6,11 +6,13 @@ import com.erotsx.blog.vo.ArticleVo;
 import com.erotsx.blog.vo.PageParams;
 import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("articles")
 public class ArticleController {
@@ -57,10 +59,12 @@ public class ArticleController {
     @GetMapping("search")
     public Result<PageVo<ArticleVo>> search(@RequestParam(required = false) String keyword,
                                             @RequestParam(required = false) String status,
-                                            @RequestParam(required = false) String category,
+                                            @RequestParam(required = false) Integer tagId,
+                                            @RequestParam(required = false) Integer categoryId,
                                             @RequestParam(required = false, defaultValue = "1") int page,
                                             @RequestParam(required = false, defaultValue = "10") int pageSize) {
-        return Result.success(articleService.search(keyword, status, category, new PageParams(page, pageSize)));
+        log.info(keyword+status+tagId+categoryId);
+        return Result.success(articleService.search(keyword, status, tagId,categoryId, new PageParams(page, pageSize)));
     }
 
 }

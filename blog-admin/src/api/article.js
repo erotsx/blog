@@ -2,17 +2,16 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: '/vue-element-admin/article/list',
+    url: '/articles/search',
     method: 'get',
-    params: query
-  })
-}
-
-export function fetchArticle(id) {
-  return request({
-    url: '/vue-element-admin/article/detail',
-    method: 'get',
-    params: { id }
+    params: {
+      page: query.page,
+      pageSize: query.pageSize,
+      tagId: query.tagId,
+      title: query.title,
+      status: query.status,
+      categoryId: query.categoryId
+    }
   })
 }
 

@@ -31,9 +31,9 @@ public class ArticleVo {
 
     private ArticleBodyVo body;
 
-    private List<TagVo> tags;
+    private List<String> tags;
 
-    private CategoryVo category;
+    private String  categoryName;
 
     private String status;
 }

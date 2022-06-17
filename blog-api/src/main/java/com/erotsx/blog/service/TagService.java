@@ -1,5 +1,6 @@
 package com.erotsx.blog.service;
 
+import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.vo.Result;
 import com.erotsx.blog.vo.TagVo;
 
@@ -11,4 +12,5 @@ public interface TagService {
     List<TagVo> getTags(int limit);
 
     List<TagVo> getAllTags();
+
 }
