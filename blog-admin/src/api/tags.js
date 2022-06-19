@@ -6,13 +6,21 @@ export function fetchTags() {
     method: 'GET'
   })
 }
+export function searchTags(query) {
+  return request({
+    url: '/tag/search',
+    method: 'GET',
+    params: {
+      keyword: query.tagName,
+      page: query.page,
+      pageSize: query.pageSize
+    }
+  })
+}
 export function remove(id) {
   return request({
-    url: '/system/tags/remove',
-    method: 'delete',
-    params: {
-      id: id
-    }
+    url: '/tag/delete/' + id,
+    method: 'delete'
   })
 }
 export function deleteBatch(data) {
