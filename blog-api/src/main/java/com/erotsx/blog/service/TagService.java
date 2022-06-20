@@ -1,7 +1,6 @@
 package com.erotsx.blog.service;
 
 import com.erotsx.blog.entity.Tag;
-import com.erotsx.blog.vo.PageParams;
 import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.TagVo;
 
@@ -19,4 +18,8 @@ public interface TagService {
     void deleteById(Long id);
 
     void add(Tag tag);
+
+    void update(Tag tag);
+
+    TagVo getInfo(Long id);
 }

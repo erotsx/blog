@@ -1,9 +1,14 @@
 import request from '@/utils/request'
 
-export function fetchCategory() {
+export function searchCategories(query) {
   return request({
-    url: '/category/getAllCategories',
-    method: 'GET'
+    url: '/category/search',
+    method: 'GET',
+    params: {
+      keyword: query.categoryName,
+      page: query.page,
+      pageSize: query.pageSize
+    }
   })
 }
 export function deleteBatch(data) {
@@ -15,33 +20,27 @@ export function deleteBatch(data) {
 }
 export function remove(id) {
   return request({
-    url: '/system/category/delete',
-    method: 'delete',
-    params: {
-      id: id
-    }
+    url: '/category/delete/' + id,
+    method: 'delete'
   })
 }
 export function add(data) {
   return request({
-    url: '/system/category/add',
+    url: '/category/add',
     method: 'POST',
     data
   })
 }
 export function info(id) {
   return request({
-    url: '/system/category/info',
-    method: 'get',
-    params: {
-      id: id
-    }
+    url: '/category/info/' + id,
+    method: 'get'
   })
 }
 export function update(data) {
   return request({
-    url: '/system/category/update',
-    method: 'post',
+    url: '/category/update',
+    method: 'put',
     data
   })
 }

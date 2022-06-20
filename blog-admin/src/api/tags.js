@@ -32,24 +32,21 @@ export function deleteBatch(data) {
 }
 export function add(data) {
   return request({
-    url: '/system/tags/add',
+    url: '/tag/add',
     method: 'POST',
     data
   })
 }
 export function info(id) {
   return request({
-    url: '/system/tags/info',
-    method: 'get',
-    params: {
-      id: id
-    }
+    url: '/tag/info/' + id,
+    method: 'get'
   })
 }
 export function update(data) {
   return request({
-    url: '/system/tags/update',
-    method: 'post',
+    url: '/tag/update',
+    method: 'put',
     data
   })
 }

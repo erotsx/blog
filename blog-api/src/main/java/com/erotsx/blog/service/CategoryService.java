@@ -18,4 +18,8 @@ public interface CategoryService {
     void add(Category category);
 
     PageVo<CategoryVo> search(String keyword, int page, int pageSize);
+
+    void update(Category category);
+
+    CategoryVo getInfo(Long id);
 }

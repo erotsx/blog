@@ -6,7 +6,6 @@ import com.erotsx.blog.dao.TagMapper;
 import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.exception.Asserts;
 import com.erotsx.blog.service.TagService;
-import com.erotsx.blog.vo.PageParams;
 import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.TagVo;
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +74,21 @@ public class TagServiceImpl implements TagService {
         } else {
             tagMapper.insert(tag);
         }
+    }
+
+    @Override
+    public void update(Tag tag) {
+        tagMapper.updateById(tag);
+    }
+
+    @Override
+    public TagVo getInfo(Long id) {
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Tag::getId, id);
+        Tag tag = tagMapper.selectOne(queryWrapper);
+        TagVo tagVo = new TagVo();
+        BeanUtils.copyProperties(tag, tagVo);
+        return tagVo;
     }
 
     private List<TagVo> getTagVoList(List<Tag> tagList) {

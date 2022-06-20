@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.dao.CategoryMapper;
 import com.erotsx.blog.entity.Category;
-import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.exception.Asserts;
 import com.erotsx.blog.service.CategoryService;
 import com.erotsx.blog.vo.CategoryVo;
@@ -76,5 +75,20 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Page<Category> categoryPage = categoryMapper.selectPage(new Page<>(page, pageSize), queryWrapper);
         return new PageVo<>(getCategoryVoList(categoryPage.getRecords()), categoryPage.getTotal());
+    }
+
+    @Override
+    public void update(Category category) {
+        categoryMapper.updateById(category);
+    }
+
+    @Override
+    public CategoryVo getInfo(Long id) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getId, id);
+        Category category = categoryMapper.selectOne(queryWrapper);
+        CategoryVo categoryVo = new CategoryVo();
+        BeanUtils.copyProperties(category, categoryVo);
+        return categoryVo;
     }
 }

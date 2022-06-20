@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +12,8 @@ import java.util.Map;
 
 public class JWTUtils {
 
-    private static final String jwtToken = "123456Mszlu!@###$$";
+    @Value("${blog.jwt.token}")
+    private static final String jwtToken = null;
 
     public static String createToken(Long userId) {
         Map<String, Object> claims = new HashMap<>();

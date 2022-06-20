@@ -5,17 +5,23 @@ import com.erotsx.blog.service.TagService;
 import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.Result;
 import com.erotsx.blog.vo.TagVo;
+import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("tag")
 public class TagController {
 
     @Resource
     private TagService tagService;
+
+    @Resource
+    private StringEncryptor encryptor;
 
     /**
      * @param limit 设置返回数目
@@ -67,5 +73,24 @@ public class TagController {
         return Result.success(null, "添加成功");
     }
 
+    /**
+     * @param tag 修改tag的信息
+     * @return String
+     */
+    @PutMapping("update")
+    public Result<?> update(@RequestBody Tag tag) {
+        log.info(String.valueOf(tag));
+        tagService.update(tag);
+        return Result.success(null, "修改成功");
+    }
+
+    /**
+     * @param id 根据Id查询tag
+     * @return tagVo
+     */
+    @GetMapping("info/{id}")
+    public Result<TagVo> info(@PathVariable Long id) {
+        return Result.success(tagService.getInfo(id));
+    }
 
 }
