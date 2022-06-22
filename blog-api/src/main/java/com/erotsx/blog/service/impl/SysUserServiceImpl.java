@@ -45,11 +45,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public SysUserVo getUserInfo(String token) {
-        Map<String, Object> map = JWTUtils.checkToken(token);
-        if (map == null) {
+        if (JWTUtils.checkToken(token)) {
             Asserts.fail("token错误");
         }
-        log.info(String.valueOf(map));
         String user = redisTemplate.opsForValue().get("TOKEN_" + token);
         if (StringUtils.isBlank(user)) {
             Asserts.fail("token错误");
