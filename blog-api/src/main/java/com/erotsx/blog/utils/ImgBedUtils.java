@@ -1,6 +1,8 @@
 package com.erotsx.blog.utils;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +13,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import javax.json.stream.JsonParser;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Component
 @ConfigurationProperties(prefix = "img-bed")
@@ -28,9 +30,9 @@ public class ImgBedUtils {
      * 上传图片到图床
      *
      * @param file 要上传的图片
-     * @return 图片地址
+     * @return 图片信息
      */
-    public static String upload(MultipartFile file) throws IOException {
+    public static JSONObject upload(MultipartFile file) throws IOException {
         ByteArrayResource fileAsResource = new ByteArrayResource(file.getBytes()) {
             @Override
             public String getFilename() {
@@ -48,8 +50,7 @@ public class ImgBedUtils {
         map.add("token", Token);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(IMG_URL_API, map, String.class);
-        System.out.println(responseEntity.getBody());
-        return responseEntity.getBody();
+        return JSON.parseObject(responseEntity.getBody()).getJSONObject("data");
     }
 
     public void setUID(String UID) {

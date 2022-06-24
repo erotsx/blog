@@ -13,6 +13,8 @@ public class SysUser {
 
     private String avatar;
 
+    private String avatarDelete;
+
     private Date createDate;
 
     private String email;

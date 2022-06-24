@@ -1,5 +1,6 @@
 package com.erotsx.blog.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.utils.ImgBedUtils;
 import com.erotsx.blog.vo.Result;
@@ -26,10 +27,13 @@ public class SysUserController {
         return Result.success(sysUserService.getUserInfo(token));
     }
 
+    /**
+     * @param file 头像文件
+     * @return 头像 url
+     * @throws IOException 异常
+     */
     @PutMapping("updateAvatar")
-    public Result<String> updateAvatar(@RequestBody MultipartFile file) throws IOException {
-        String msg = ImgBedUtils.upload(file);
-        System.out.println();
-        return Result.success(msg);
+    public Result<String> updateAvatar(@RequestBody MultipartFile file, @RequestHeader("Authorization") String token) throws IOException {
+        return Result.success(sysUserService.updateAvatar(file,token), "修改成功");
     }
 }

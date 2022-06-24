@@ -30,7 +30,7 @@ public class JWTUtils {
      */
     public static String createToken(Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
+        claims.put("sub", userId);
         claims.put("created", new Date());
         return createToken(claims);
     }
