@@ -23,14 +23,14 @@ public class JWTUtils {
 
 
     /**
-     * 根据 userId 生成 token
+     * 根据 account 生成 token
      *
-     * @param userId userId
+     * @param account account
      * @return token
      */
-    public static String createToken(Long userId) {
+    public static String createToken(String account) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("sub", userId);
+        claims.put("sub", account);
         claims.put("created", new Date());
         return createToken(claims);
     }
@@ -65,7 +65,7 @@ public class JWTUtils {
      * @return 是否有效
      */
     public static boolean checkToken(String token) {
-        return getUserIdFromToken(token) != null && !isTokenExpired(token);
+        return getAccountFromToken(token) != null && !isTokenExpired(token);
     }
 
     /**
@@ -85,20 +85,20 @@ public class JWTUtils {
     }
 
     /**
-     * 根据token获取userId
+     * 根据token获取account
      *
      * @param token token值
-     * @return userId
+     * @return account
      */
-    public static Long getUserIdFromToken(String token) {
-        Long userId;
+    public static String getAccountFromToken(String token) {
+        String account;
         try {
             Claims claims = getClaimsFromToken(token);
-            userId = Long.valueOf(claims.getSubject());
+            account = claims.getSubject();
         } catch (Exception e) {
-            userId = null;
+            account = null;
         }
-        return userId;
+        return account;
     }
 
     /**

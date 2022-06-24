@@ -81,7 +81,9 @@ public class SysUserServiceImpl implements SysUserService {
             Asserts.fail("token错误");
         }
         JSONObject data = ImgBedUtils.upload(file);
-        SysUser sysUser = sysUserMapper.selectById(JWTUtils.getUserIdFromToken(token));
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getAccount, JWTUtils.getAccountFromToken(token));
+        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
         String avatar = data.getString("url");
         String delete = data.getString("delete");
         sysUser.setAvatar(avatar);

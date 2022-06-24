@@ -41,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
         if (sysUser == null) {
             Asserts.fail("用户名或密码错误");
         }
-        String token = JWTUtils.createToken(sysUser.getId());
+        String token = JWTUtils.createToken(sysUser.getAccount());
         redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
@@ -70,7 +70,7 @@ public class AdminServiceImpl implements AdminService {
         sysUser.setNickname(nickname);
         sysUser.setPassword(password);
         sysUserService.insert(sysUser);
-        String token = JWTUtils.createToken(sysUser.getId());
+        String token = JWTUtils.createToken(sysUser.getAccount());
         redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
