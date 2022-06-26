@@ -1,9 +1,9 @@
 package com.erotsx.blog.controller;
 
+import com.erotsx.blog.common.api.Result;
 import com.erotsx.blog.entity.Tag;
 import com.erotsx.blog.service.TagService;
 import com.erotsx.blog.vo.PageVo;
-import com.erotsx.blog.vo.Result;
 import com.erotsx.blog.vo.TagVo;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.StringEncryptor;

@@ -1,4 +1,4 @@
-package com.erotsx.blog.aop;
+package com.erotsx.blog.common.aop;
 
 import java.lang.annotation.*;
 

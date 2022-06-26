@@ -1,4 +1,4 @@
-package com.erotsx.blog.aop;
+package com.erotsx.blog.common.aop;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 @Slf4j
 public class LogAspect {
 
-    @Pointcut("@annotation(com.erotsx.blog.aop.LogAnnotation)")
+    @Pointcut("@annotation(com.erotsx.blog.common.aop.LogAnnotation)")
     public void logPointCut() {
     }
 

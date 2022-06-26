@@ -1,6 +1,7 @@
-package com.erotsx.blog.exception;
+package com.erotsx.blog.common.exception;
 
-import com.erotsx.blog.vo.ErrorCode;
+
+import com.erotsx.blog.common.api.ErrorCode;
 
 public class Asserts {
 

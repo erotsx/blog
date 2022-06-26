@@ -1,4 +1,4 @@
-package com.erotsx.blog.vo;
+package com.erotsx.blog.common.api;
 
 public enum ResultCode implements ErrorCode {
     SUCCESS(200, "操作成功"),

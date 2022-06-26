@@ -1,6 +1,6 @@
-package com.erotsx.blog.exception;
+package com.erotsx.blog.common.exception;
 
-import com.erotsx.blog.vo.Result;
+import com.erotsx.blog.common.api.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

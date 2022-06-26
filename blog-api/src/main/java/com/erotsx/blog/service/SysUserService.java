@@ -1,7 +1,6 @@
 package com.erotsx.blog.service;
 
 import com.erotsx.blog.entity.SysUser;
-import com.erotsx.blog.vo.Result;
 import com.erotsx.blog.vo.SysUserVo;
 import org.springframework.web.multipart.MultipartFile;
 

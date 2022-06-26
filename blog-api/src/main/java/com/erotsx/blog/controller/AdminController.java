@@ -1,8 +1,8 @@
 package com.erotsx.blog.controller;
 
+import com.erotsx.blog.common.api.Result;
 import com.erotsx.blog.service.AdminService;
 import com.erotsx.blog.vo.AdminParams;
-import com.erotsx.blog.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

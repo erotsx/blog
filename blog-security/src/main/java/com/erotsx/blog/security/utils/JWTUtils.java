@@ -1,9 +1,8 @@
-package com.erotsx.blog.utils;
+package com.erotsx.blog.security.utils;
 
-import com.erotsx.blog.exception.Asserts;
+import com.erotsx.blog.common.exception.Asserts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

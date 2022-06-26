@@ -1,10 +1,10 @@
 package com.erotsx.blog.controller;
 
+import com.erotsx.blog.common.api.Result;
 import com.erotsx.blog.service.ArticleService;
 import com.erotsx.blog.vo.ArticleVo;
 import com.erotsx.blog.vo.PageParams;
 import com.erotsx.blog.vo.PageVo;
-import com.erotsx.blog.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
