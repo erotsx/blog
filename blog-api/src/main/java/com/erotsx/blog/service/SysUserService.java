@@ -2,6 +2,7 @@ package com.erotsx.blog.service;
 
 import com.erotsx.blog.entity.SysUser;
 import com.erotsx.blog.vo.SysUserVo;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,4 +19,5 @@ public interface SysUserService {
     void insert(SysUser sysUser);
 
     String updateAvatar(MultipartFile file, String token) throws IOException;
+
 }

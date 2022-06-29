@@ -3,6 +3,7 @@ package com.erotsx.blog.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.erotsx.blog.bo.AdminUserDetails;
 import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysUser;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -94,4 +96,5 @@ public class SysUserServiceImpl implements SysUserService {
         sysUserMapper.updateById(sysUser);
         return avatar;
     }
+
 }
