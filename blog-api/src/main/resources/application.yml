@@ -1,0 +1,26 @@
+jwt:
+  secret: 'rtn2UusDVv#&R$'
+  expiration: 24
+
+img-bed:
+  UID: 'dd8f57fc3b53b197beb27912d0002345'
+  token: '615e392c6e4b8dbb2c70f2eebb18e595'
+
+security:
+  whitelist:
+    - /swagger-ui/
+    - /swagger-resources/**
+    - /**/v2/api-docs
+    - /**/*.html
+    - /**/*.js
+    - /**/*.css
+    - /**/*.png
+    - /**/*.map
+    - /favicon.ico
+    - /actuator/**
+    - /druid/**
+    - /admin/login
+    - /admin/register
+    - /admin/info
+    - /admin/logout
+    - /minio/upload

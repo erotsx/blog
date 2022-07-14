@@ -27,6 +27,7 @@
         <fastjson.version>1.2.76</fastjson.version>
         <blog-common.version>0.0.1-SNAPSHOT</blog-common.version>
         <blog-security.version>0.0.1-SNAPSHOT</blog-security.version>
+        <hutool.version>5.8.4</hutool.version>
     </properties>
 
     <dependencies>
@@ -93,6 +94,11 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

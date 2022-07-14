@@ -28,22 +28,16 @@ public class SecurityConfig {
     @Resource
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
+    @Resource
+    private WhiteListConfig whiteListConfig;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity.authorizeRequests();
-        registry.antMatchers(HttpMethod.GET, // 允许对于网站静态资源的无授权访问
-                        "/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/swagger-resources/**",
-                        "/v2/api-docs/**")
-                .permitAll()
-                .antMatchers("/admin/login", "/admin/register")// 对登录注册要允许匿名访问
-                .permitAll()
-                .antMatchers(HttpMethod.OPTIONS)
+        for (String url : whiteListConfig.getWhiteList()) {
+            registry.antMatchers(url).permitAll();
+        }
+        registry.antMatchers(HttpMethod.OPTIONS)
                 .permitAll()
                 .and()
                 .authorizeRequests()
