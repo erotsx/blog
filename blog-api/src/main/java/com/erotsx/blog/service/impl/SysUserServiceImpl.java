@@ -1,13 +1,14 @@
 package com.erotsx.blog.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.bo.AdminUserDetails;
-import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.SysUserMapper;
+import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.entity.SysUser;
-import com.erotsx.blog.security.utils.JWTUtils;
+import com.erotsx.blog.entity.SysUserInfo;
+import com.erotsx.blog.service.SysRoleService;
+import com.erotsx.blog.service.SysUserInfoService;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.service.ThreadService;
 import com.erotsx.blog.utils.ImgBedUtils;
@@ -16,8 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -25,13 +29,20 @@ import java.io.IOException;
 
 @Service
 @Slf4j
+@Transactional(rollbackFor = Exception.class)
 public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserMapper sysUserMapper;
 
     @Resource
+    private SysUserInfoService sysUserInfoService;
+
+    @Resource
     private ThreadService threadService;
+
+    @Resource
+    private SysRoleService sysRoleService;
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
@@ -41,27 +52,15 @@ public class SysUserServiceImpl implements SysUserService {
         return sysUserMapper.selectById(authorId);
     }
 
-    @Override
-    public SysUser findSysUser(String account, String password) {
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getAccount, account);
-        queryWrapper.eq(SysUser::getPassword, password);
-        queryWrapper.select(SysUser::getId, SysUser::getAccount, SysUser::getAvatar, SysUser::getNickname);
-        return sysUserMapper.selectOne(queryWrapper);
-    }
 
     @Override
-    public SysUserVo getUserInfo(String token) {
-        if (!JWTUtils.checkToken(token)) {
-            Asserts.fail("token错误");
-        }
-        String user = redisTemplate.opsForValue().get("TOKEN_" + token);
-        if (StringUtils.isBlank(user)) {
-            Asserts.fail("token错误");
-        }
-        SysUser sysUser = JSON.parseObject(user, SysUser.class);
+    public SysUserVo getUserInfo() {
+
+        SysUser sysUser = getCurrentUser();
+        SysUserInfo sysUserInfo = sysUserInfoService.findSysUserInfoById(sysUser.getId());
         SysUserVo sysUserVo = new SysUserVo();
         BeanUtils.copyProperties(sysUser, sysUserVo);
+        BeanUtils.copyProperties(sysUserInfo, sysUserVo);
         return sysUserVo;
     }
 
@@ -78,23 +77,38 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String updateAvatar(MultipartFile file, String token) throws IOException {
-        if (!JWTUtils.checkToken(token)) {
-            Asserts.fail("token错误");
-        }
+    public String updateAvatar(MultipartFile file) throws IOException {
         JSONObject data = ImgBedUtils.upload(file);
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getAccount, JWTUtils.getAccountFromToken(token));
-        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
+        SysUser sysUser = getCurrentUser();
+        SysUserInfo sysUserInfo = sysUserInfoService.findSysUserInfoById(sysUser.getId());
         String avatar = data.getString("url");
         String delete = data.getString("delete");
-        sysUser.setAvatar(avatar);
-        if (!StringUtils.isBlank(sysUser.getAvatarDelete())) {
-            threadService.deleteAvatar(sysUser.getAvatarDelete());
+        if (!StringUtils.isBlank(sysUserInfo.getAvatarDelete())) {
+            threadService.deleteAvatar(sysUserInfo.getAvatarDelete());
         }
-        sysUser.setAvatarDelete(delete);
-        sysUserMapper.updateById(sysUser);
+        sysUserInfo.setAvatar(avatar);
+        sysUserInfo.setAvatarDelete(delete);
+        sysUserInfoService.updateById(sysUserInfo);
         return avatar;
+    }
+
+    @Override
+    public SysUser getCurrentUser() {
+        SecurityContext ctx = SecurityContextHolder.getContext();
+        Authentication auth = ctx.getAuthentication();
+        AdminUserDetails adminUserDetails = (AdminUserDetails) auth.getPrincipal();
+        return adminUserDetails.getSysUser();
+    }
+
+    @Override
+    public SysUserVo getBloggerInfo() {
+        SysRole sysRole = sysRoleService.getRoleByName("blogger");
+        SysUser sysUser = sysUserMapper.getBlogger(sysRole.getId());
+        SysUserInfo sysUserInfo = sysUserInfoService.findSysUserInfoById(sysUser.getId());
+        SysUserVo sysUserVo = new SysUserVo();
+        BeanUtils.copyProperties(sysUser, sysUserVo);
+        BeanUtils.copyProperties(sysUserInfo, sysUserVo);
+        return sysUserVo;
     }
 
 }

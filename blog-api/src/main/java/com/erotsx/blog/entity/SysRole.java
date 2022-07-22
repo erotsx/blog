@@ -5,17 +5,15 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class SysUser {
+public class SysRole {
 
     private Long id;
 
-    private String account;
+    private String name;
+
+    private String description;
 
     private Date createDate;
-
-    private Date lastLogin;
-
-    private String password;
 
     private String status;
 }

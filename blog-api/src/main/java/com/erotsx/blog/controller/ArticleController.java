@@ -20,12 +20,14 @@ public class ArticleController {
     private ArticleService articleService;
 
     /**
-     * @param pageParams 分页参数
+     * @param page     page
+     * @param pageSize pageSize
      * @return 根据是否置顶，创建时间返回文章列表
      */
     @GetMapping("getArticles")
-    public Result<PageVo<ArticleVo>> getArticles(@RequestBody PageParams pageParams) {
-        return Result.success(articleService.getArticles(pageParams));
+    public Result<PageVo<ArticleVo>> getArticles(@RequestParam(required = false, defaultValue = "1") int page,
+                                                 @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        return Result.success(articleService.getArticles(page, pageSize));
     }
 
     /**

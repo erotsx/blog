@@ -80,7 +80,7 @@ public class AdminServiceImpl implements AdminService {
         sysUser = new SysUser();
         String encodePassword = passwordEncoder.encode(password);
         sysUser.setAccount(account);
-        sysUser.setNickname(nickname);
+//        sysUser.setNickname(nickname);
         sysUser.setPassword(encodePassword);
         sysUser.setStatus("1");
         sysUserService.insert(sysUser);

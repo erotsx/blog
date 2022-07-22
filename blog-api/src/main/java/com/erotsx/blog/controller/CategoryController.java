@@ -21,7 +21,7 @@ public class CategoryController {
      * @return 所有目录
      */
     @GetMapping("getAllCategories")
-    public Result<List<CategoryVo>> getAllCategories() {
+    public Result<PageVo<CategoryVo>> getAllCategories() {
         return Result.success(categoryService.getAllCategories());
     }
 

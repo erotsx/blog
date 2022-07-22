@@ -4,7 +4,9 @@ package com.erotsx.blog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.common.exception.Asserts;
+import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.dao.CategoryMapper;
+import com.erotsx.blog.entity.Article;
 import com.erotsx.blog.entity.Category;
 import com.erotsx.blog.service.CategoryService;
 import com.erotsx.blog.vo.CategoryVo;
@@ -23,15 +25,20 @@ public class CategoryServiceImpl implements CategoryService {
     @Resource
     private CategoryMapper categoryMapper;
 
+    @Resource
+    private ArticleMapper articleMapper;
+
     @Override
     public Category getCategoryById(Long id) {
         return categoryMapper.selectById(id);
     }
 
     @Override
-    public List<CategoryVo> getAllCategories() {
+    public PageVo<CategoryVo> getAllCategories() {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         List<Category> categories = categoryMapper.selectList(new LambdaQueryWrapper<>());
-        return getCategoryVoList(categories);
+        Long total = Long.valueOf(categoryMapper.selectCount(queryWrapper));
+        return new PageVo<>(getCategoryVoList(categories), total);
     }
 
     private List<CategoryVo> getCategoryVoList(List<Category> categories) {
@@ -39,9 +46,16 @@ public class CategoryServiceImpl implements CategoryService {
         for (Category category : categories) {
             CategoryVo categoryVo = new CategoryVo();
             BeanUtils.copyProperties(category, categoryVo);
+            categoryVo.setArticleCount(getCategoryArticleCount(category.getId()));
             categoryVoList.add(categoryVo);
         }
         return categoryVoList;
+    }
+
+    private Integer getCategoryArticleCount(Long categoryId) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getCategoryId, categoryId);
+        return articleMapper.selectCount(queryWrapper);
     }
 
     @Override

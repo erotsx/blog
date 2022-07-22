@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@Data
 public class AdminUserDetails implements UserDetails {
 
     private SysUser sysUser;
@@ -49,5 +48,9 @@ public class AdminUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return sysUser.getStatus().equals("1");
+    }
+
+    public SysUser getSysUser() {
+        return sysUser;
     }
 }

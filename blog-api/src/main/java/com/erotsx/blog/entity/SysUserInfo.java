@@ -1,10 +1,13 @@
-package com.erotsx.blog.vo;
+package com.erotsx.blog.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 @Data
-public class SysUserVo {
+public class SysUserInfo {
+
+    private Long id;
+
+    private Long userId;
 
     private String avatar;
 
@@ -18,6 +21,7 @@ public class SysUserVo {
 
     private String qq;
 
-    private String introduction;
+    private String avatarDelete;
 
+    private String introduction;
 }

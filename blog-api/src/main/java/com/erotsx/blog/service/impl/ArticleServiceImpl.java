@@ -32,9 +32,6 @@ public class ArticleServiceImpl implements ArticleService {
     private TagService tagService;
 
     @Resource
-    private SysUserService sysUserService;
-
-    @Resource
     private ArticleBodyMapper articleBodyMapper;
 
     @Resource
@@ -43,16 +40,19 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ThreadService threadService;
 
+    @Resource
+    private SysUserInfoService sysUserInfoService;
+
     @Override
-    public PageVo<ArticleVo> getArticles(PageParams pageParams) {
+    public PageVo<ArticleVo> getArticles(int page, int pageSize) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Article::getIsTop, Article::getCreateDate);
-        return getArticleVoListByPage(pageParams, queryWrapper);
+        return getArticleVoListByPage(page, pageSize, queryWrapper);
     }
 
-    private PageVo<ArticleVo> getArticleVoListByPage(PageParams pageParams, LambdaQueryWrapper<Article> queryWrapper) {
-        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
-        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
+    private PageVo<ArticleVo> getArticleVoListByPage(int page, int pageSize, LambdaQueryWrapper<Article> queryWrapper) {
+        Page<Article> pageTemp = new Page<>(page, pageSize);
+        Page<Article> articlePage = articleMapper.selectPage(pageTemp, queryWrapper);
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : articlePage.getRecords()) {
             ArticleVo articleVo = getArticleVo(article);
@@ -113,7 +113,7 @@ public class ArticleServiceImpl implements ArticleService {
             tagNames.add(tagVo.getTagName());
         }
         articleVo.setTags(tagNames);
-        articleVo.setAuthor(sysUserService.findSysUserById(article.getAuthorId()).getNickname());
+        articleVo.setAuthor(sysUserInfoService.findSysUserInfoById(article.getAuthorId()).getNickname());
         articleVo.setCategoryName(categoryService.getCategoryById(article.getId()).getCategoryName());
         return articleVo;
     }
@@ -135,7 +135,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (categoryId != null) {
             queryWrapper.eq(Article::getCategoryId, categoryId);
         }
-        return getArticleVoListByPage(pageParams, queryWrapper);
+        return getArticleVoListByPage(pageParams.getPage(), pageParams.getPageSize(), queryWrapper);
     }
 
     @Override

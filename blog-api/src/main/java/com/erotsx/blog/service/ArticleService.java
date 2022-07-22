@@ -9,7 +9,8 @@ import com.erotsx.blog.vo.PageVo;
 import java.util.List;
 
 public interface ArticleService {
-    PageVo<ArticleVo> getArticles(PageParams pageParams);
+
+    PageVo<ArticleVo> getArticles(int page, int pageSize);
 
     List<ArticleVo> getHotArticles(int limit);
 

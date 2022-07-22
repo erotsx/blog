@@ -10,14 +10,15 @@ import java.io.IOException;
 public interface SysUserService {
     SysUser findSysUserById(Long authorId);
 
-    SysUser findSysUser(String account, String password);
-
-    SysUserVo getUserInfo(String token);
+    SysUserVo getUserInfo();
 
     SysUser findSysUserByAccount(String account);
 
     void insert(SysUser sysUser);
 
-    String updateAvatar(MultipartFile file, String token) throws IOException;
+    String updateAvatar(MultipartFile file) throws IOException;
 
+    SysUser getCurrentUser();
+
+    SysUserVo getBloggerInfo();
 }

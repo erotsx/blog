@@ -17,12 +17,11 @@ public class SysUserController {
     private SysUserService sysUserService;
 
     /**
-     * @param token token
      * @return 返回用户信息
      */
     @RequestMapping("getUserInfo")
-    public Result<SysUserVo> getUserInfo(@RequestHeader("Authorization") String token) {
-        return Result.success(sysUserService.getUserInfo(token));
+    public Result<SysUserVo> getUserInfo() {
+        return Result.success(sysUserService.getUserInfo());
     }
 
     /**
@@ -31,7 +30,15 @@ public class SysUserController {
      * @throws IOException 异常
      */
     @PutMapping("updateAvatar")
-    public Result<String> updateAvatar(@RequestBody MultipartFile file, @RequestHeader("Authorization") String token) throws IOException {
-        return Result.success(sysUserService.updateAvatar(file,token), "修改成功");
+    public Result<String> updateAvatar(@RequestBody MultipartFile file) throws IOException {
+        return Result.success(sysUserService.updateAvatar(file), "修改成功");
+    }
+
+    /**
+     * @return 返回博主信息
+     */
+    @GetMapping("getBloggerInfo")
+    public Result<SysUserVo> getBloggerInfo() {
+        return Result.success(sysUserService.getBloggerInfo());
     }
 }

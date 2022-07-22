@@ -22,5 +22,9 @@ security:
     - /admin/login
     - /admin/register
     - /admin/info
+    - /articles/**
+    - /tag/**
     - /admin/logout
     - /minio/upload
+    - /user/getBloggerInfo
+    - /category/getAllCategories
