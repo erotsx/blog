@@ -36,7 +36,7 @@ public class TagController {
      * @return 获取所有标签
      */
     @GetMapping("getAllTags")
-    public Result<List<TagVo>> getAllTags() {
+    public Result<PageVo<TagVo>> getAllTags() {
         return Result.success(tagService.getAllTags());
     }
 

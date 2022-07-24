@@ -32,9 +32,13 @@ public class ArticleVo {
 
     private ArticleBodyVo body;
 
+    private Integer wordCounts;
+
     private List<String> tags;
 
-    private String  categoryName;
+    private String categoryName;
 
     private String status;
+
+    private String cover;
 }

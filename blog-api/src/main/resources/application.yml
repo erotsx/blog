@@ -28,3 +28,4 @@ security:
     - /minio/upload
     - /user/getBloggerInfo
     - /category/getAllCategories
+    - /articles/getArchives

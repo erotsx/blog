@@ -11,7 +11,7 @@ public interface TagService {
 
     List<TagVo> getTags(int limit);
 
-    List<TagVo> getAllTags();
+    PageVo<TagVo> getAllTags();
 
     PageVo<TagVo> search(String keyword, int page, int pageSize);
 

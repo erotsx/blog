@@ -43,9 +43,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagVo> getAllTags() {
+    public PageVo<TagVo> getAllTags() {
         List<Tag> tagList = tagMapper.selectList(new LambdaQueryWrapper<>());
-        return getTagVoList(tagList);
+        Long total = Long.valueOf(tagMapper.selectCount(new LambdaQueryWrapper<>()));
+        return new PageVo<>(getTagVoList(tagList), total);
     }
 
     @Override

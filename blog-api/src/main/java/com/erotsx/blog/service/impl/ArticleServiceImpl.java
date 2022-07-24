@@ -76,7 +76,7 @@ public class ArticleServiceImpl implements ArticleService {
     public List<ArticleVo> getNewArticles(int limit) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Article::getCreateDate);
-        queryWrapper.select(Article::getId, Article::getTitle);
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getCreateDate, Article::getCover);
         queryWrapper.last("limit " + limit);
         List<Article> articles = articleMapper.selectList(queryWrapper);
         return getArticleVoList(articles);
@@ -118,6 +118,14 @@ public class ArticleServiceImpl implements ArticleService {
         return articleVo;
     }
 
+    private ArticleVo getArchiveVo(Article article) {
+        ArticleVo articleVo = new ArticleVo();
+        articleVo.setTitle(article.getTitle());
+        articleVo.setCreateDate(article.getCreateDate());
+        articleVo.setId(article.getId());
+        return articleVo;
+    }
+
     @Override
     public PageVo<ArticleVo> search(String keyword, String status, Long tagId, Long categoryId, PageParams pageParams) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
@@ -143,6 +151,19 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleMapper.selectById(id);
         article.setStatus("回收站");
         articleMapper.updateById(article);
+    }
+
+    @Override
+    public PageVo<ArticleVo> getArchives() {
+        Long total = Long.valueOf(articleMapper.selectCount(new LambdaQueryWrapper<>()));
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(Article::getCreateDate);
+        List<Article> articles = articleMapper.selectList(queryWrapper);
+        List<ArticleVo> articleVoList = new ArrayList<>();
+        for (Article article : articles) {
+            articleVoList.add(getArchiveVo(article));
+        }
+        return new PageVo<>(articleVoList, total);
     }
 
     private ArticleBodyVo getArticleBodyById(Long id) {

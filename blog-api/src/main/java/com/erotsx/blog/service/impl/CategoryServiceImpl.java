@@ -35,9 +35,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public PageVo<CategoryVo> getAllCategories() {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         List<Category> categories = categoryMapper.selectList(new LambdaQueryWrapper<>());
-        Long total = Long.valueOf(categoryMapper.selectCount(queryWrapper));
+        Long total = Long.valueOf(categoryMapper.selectCount(new LambdaQueryWrapper<>()));
         return new PageVo<>(getCategoryVoList(categories), total);
     }
 

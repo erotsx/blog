@@ -23,4 +23,6 @@ public interface ArticleService {
     PageVo<ArticleVo> search(String keyword, String status, Long tagId, Long categoryId, PageParams pageParams);
 
     void deleteArticleById(Long id);
+
+    PageVo<ArticleVo> getArchives();
 }

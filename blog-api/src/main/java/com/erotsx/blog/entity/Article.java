@@ -29,5 +29,9 @@ public class Article {
 
     private Integer commentCounts;
 
+    private Integer wordCounts;
+
     private String status;
+
+    private String cover;
 }

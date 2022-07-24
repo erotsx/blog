@@ -86,4 +86,10 @@ public class ArticleController {
         return Result.success(articleService.search(keyword, status, tagId, categoryId, new PageParams(page, pageSize)));
     }
 
+    @GetMapping("getArchives")
+    public Result<PageVo<ArticleVo>> getArchives() {
+        return Result.success(articleService.getArchives());
+    }
+
+
 }
