@@ -2,6 +2,7 @@ package com.erotsx.blog.vo;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,5 +15,10 @@ public class PageVo<T> {
     public PageVo(List<T> items, Long total) {
         this.items = items;
         this.total = total;
+    }
+
+    public PageVo() {
+        this.total = 0L;
+        this.items = new ArrayList<>();
     }
 }

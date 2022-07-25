@@ -3,6 +3,7 @@ package com.erotsx.blog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.ArticleBodyMapper;
 import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.entity.Article;
@@ -108,11 +109,11 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleVo articleVo = new ArticleVo();
         BeanUtils.copyProperties(article, articleVo);
         List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
-        List<String> tagNames = new ArrayList<>();
-        for (TagVo tagVo : tags) {
-            tagNames.add(tagVo.getTagName());
-        }
-        articleVo.setTags(tagNames);
+//        List<String> tagNames = new ArrayList<>();
+//        for (TagVo tagVo : tags) {
+//            tagNames.add(tagVo.getTagName());
+//        }
+        articleVo.setTags(tags);
         articleVo.setAuthor(sysUserInfoService.findSysUserInfoById(article.getAuthorId()).getNickname());
         articleVo.setCategoryName(categoryService.getCategoryById(article.getId()).getCategoryName());
         return articleVo;
@@ -138,10 +139,16 @@ public class ArticleServiceImpl implements ArticleService {
         queryWrapper.ne(Article::getStatus, "回收站");
         if (tagId != null) {
             List<Long> articleList = articleMapper.findArticleIdsByTagId(tagId);
+            if (articleList.isEmpty()) {
+                return new PageVo<>();
+            }
             queryWrapper.in(Article::getId, articleList);
         }
         if (categoryId != null) {
             queryWrapper.eq(Article::getCategoryId, categoryId);
+        }
+        if (articleMapper.selectCount(queryWrapper) == 0) {
+            return new PageVo<>();
         }
         return getArticleVoListByPage(pageParams.getPage(), pageParams.getPageSize(), queryWrapper);
     }

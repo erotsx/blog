@@ -34,7 +34,7 @@ public class ArticleVo {
 
     private Integer wordCounts;
 
-    private List<String> tags;
+    private List<TagVo> tags;
 
     private String categoryName;
 
