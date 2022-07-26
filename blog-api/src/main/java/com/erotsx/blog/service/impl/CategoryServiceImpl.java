@@ -104,4 +104,16 @@ public class CategoryServiceImpl implements CategoryService {
         BeanUtils.copyProperties(category, categoryVo);
         return categoryVo;
     }
+
+    /**
+     * 添加新的category，并返回添加后category的Id
+     *
+     * @param category category
+     * @return id
+     */
+    @Override
+    public Long insert(Category category) {
+        categoryMapper.insert(category);
+        return category.getId();
+    }
 }

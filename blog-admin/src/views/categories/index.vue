@@ -44,6 +44,7 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="文章数量" prop="articleCount" sortable align="center" />
         <el-table-column label="创建时间" prop="createDate" sortable align="center" />
         <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
           <template v-slot:default="slotProps">
@@ -57,7 +58,13 @@
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.pageSize" @pagination="getList" />
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="params.page"
+        :limit.sync="params.pageSize"
+        @pagination="getList"
+      />
 
       <el-dialog center :title="title" :visible.sync="dialogFormVisible">
         <el-form ref="dataForm" :rules="rules" :model="category">
@@ -76,7 +83,7 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import {add, info, remove, searchCategories, update} from '@/api/category'
+import { add, info, remove, searchCategories, update } from '@/api/category'
 
 export default {
 

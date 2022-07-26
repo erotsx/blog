@@ -11,6 +11,12 @@ export function searchCategories(query) {
     }
   })
 }
+export function fetchCategory() {
+  return request({
+    url: '/category/getAllCategories',
+    method: 'GET'
+  })
+}
 export function deleteBatch(data) {
   return request({
     url: '/system/category/deleteBatch',

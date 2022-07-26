@@ -65,14 +65,19 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'List',
-        component: () => import('@/views/post/PostList'),
+        component: () => import('@/views/article/articleList'),
         meta: { title: '所有文章', icon: 'table' }
       },
       {
         path: 'write',
         name: 'Write',
-        component: () => import('@/views/tree/index'),
+        component: () => import('@/views/article/article'),
         meta: { title: '写文章', icon: 'tree' }
+      },
+      {
+        path: 'write/:articleId',
+        name: 'Write',
+        component: () => import('@/views/article/article')
       },
       {
         path: 'categories',

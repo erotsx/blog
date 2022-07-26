@@ -14,6 +14,9 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import dayjs from 'dayjs'
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 /**
  * If you don't want to use mock-server
@@ -32,7 +35,16 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+Vue.use(mavonEditor)
+Vue.prototype.$moment = dayjs
 
+Vue.filter('date', function(value, formatStr = 'YYYY-MM-DD') {
+  return dayjs(value).format(formatStr)
+})
+
+Vue.filter('dateTime', function(value, formatStr = 'YYYY-MM-DD HH:mm:ss') {
+  return dayjs(value).format(formatStr)
+})
 Vue.config.productionTip = false
 
 new Vue({

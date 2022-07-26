@@ -14,6 +14,21 @@ export function fetchList(query) {
     }
   })
 }
+export function getArticle(id) {
+  return request({
+    url: '/articles/article/' + id,
+    method: 'get'
+  })
+}
+
+export function postArticle(data) {
+  return request({
+    url: '/articles/postArticle/',
+    method: 'post',
+    data
+  })
+}
+
 export function removeArticle(id) {
   return request({
     url: '/articles/delete/' + id,

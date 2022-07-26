@@ -80,47 +80,74 @@
         </el-table-column>
         <el-table-column
           align="center"
-          width="220"
           label="标签"
         >
           <template v-slot:default="slotProps">
             <el-tag
               v-for="(item) in slotProps.row.tags"
+              :key="item.id"
               style="margin-left: 3px"
               align="center"
               type="primary"
-            >{{ item }}
+            >{{ item.tagName }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="状态" prop="status" align="center" class-name="status-col" width="100" />
-        <el-table-column label="评论次数" prop="commentCounts" align="center" width="95" />
-        <el-table-column label="访问次数" prop="viewCounts" align="center" width="95" />
+        <el-table-column label="评论次数" prop="commentCounts" align="center" />
+        <el-table-column label="访问次数" prop="viewCounts" align="center" />
         <!--      <el-table-column label="作者" prop="author" width="110px" align="center"></el-table-column>-->
         <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center" />
-        <el-table-column label="创建时间" prop="createDate" width="150px" sortable align="center" />
+        <el-table-column label="创建时间" prop="createDate" sortable align="center" />
         <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
           <template v-slot:default="slotProps">
             <el-button type="primary" size="mini" @click="handleUpdate(slotProps.row)">
               编辑
             </el-button>
-            <el-button v-if="slotProps.row.status!='draft'" size="mini" @click="handleModifyStatus(slotProps.row,'draft')">
+            <el-button
+              v-if="slotProps.row.status!=='draft'"
+              size="mini"
+              @click="handleModifyStatus(slotProps.row,'draft')"
+            >
               设置
             </el-button>
-            <el-button v-if="slotProps.row.status!='deleted'" size="mini" type="danger" @click="handleDelete(slotProps.row)">
+            <el-button
+              v-if="slotProps.row.status!=='deleted'"
+              size="mini"
+              type="danger"
+              @click="handleDelete(slotProps.row)"
+            >
               删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.pageSize" @pagination="getList" />
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="params.page"
+        :limit.sync="params.pageSize"
+        @pagination="getList"
+      />
 
       <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-        <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form
+          ref="dataForm"
+          :rules="rules"
+          :model="temp"
+          label-position="left"
+          label-width="70px"
+          style="width: 400px; margin-left:50px;"
+        >
           <el-form-item label="Type" prop="type">
             <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-              <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+              <el-option
+                v-for="item in calendarTypeOptions"
+                :key="item.key"
+                :label="item.display_name"
+                :value="item.key"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="Date" prop="timestamp">
@@ -135,10 +162,20 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Imp">
-            <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
+            <el-rate
+              v-model="temp.importance"
+              :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+              :max="3"
+              style="margin-top:8px;"
+            />
           </el-form-item>
           <el-form-item label="Remark">
-            <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+            <el-input
+              v-model="temp.remark"
+              :autosize="{ minRows: 2, maxRows: 4}"
+              type="textarea"
+              placeholder="Please input"
+            />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -161,10 +198,11 @@
         </span>
       </el-dialog>
     </div>
-  </div></template>
+  </div>
+</template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle, fetchArticle, removeArticle } from '@/api/article'
+import { fetchList, fetchPv, createArticle, updateArticle, removeArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -252,10 +290,10 @@ export default {
   created() {
     this.getList()
     fetchTags().then(res => {
-      this.tags = res.data
+      this.tags = res.data.items
     })
     fetchCategory().then(res => {
-      this.category = res.data
+      this.category = res.data.items
     })
   },
   methods: {
@@ -359,13 +397,7 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      this.$router.push({ path: '/articles/write/' + row.id })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {

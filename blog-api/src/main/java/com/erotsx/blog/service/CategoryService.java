@@ -22,4 +22,12 @@ public interface CategoryService {
     void update(Category category);
 
     CategoryVo getInfo(Long id);
+
+    /**
+     * 添加新的category，并返回添加后category的Id
+     *
+     * @param category category
+     * @return id
+     */
+    Long insert(Category category);
 }

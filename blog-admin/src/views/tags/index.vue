@@ -45,6 +45,7 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="文章数量" prop="articleCount" sortable align="center" />
         <el-table-column label="创建时间" prop="createDate" sortable align="center" />
         <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
           <template v-slot:default="slotProps">

@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Transactional(rollbackFor = Exception.class)
 public class ArticleServiceImpl implements ArticleService {
 
     @Resource
@@ -43,6 +45,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private SysUserInfoService sysUserInfoService;
+
+    @Resource
+    private SysUserService sysUserService;
 
     @Override
     public PageVo<ArticleVo> getArticles(int page, int pageSize) {
@@ -87,7 +92,7 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleVo getArticleById(Long id) {
         Article article = articleMapper.selectById(id);
         ArticleVo articleVo = getArticleVo(article);
-        articleVo.setBody(getArticleBodyById(id));
+        articleVo.setBody(getArticleBodyById(article.getBodyId()));
         threadService.updateViewCount(article);
         return articleVo;
     }
@@ -109,13 +114,9 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleVo articleVo = new ArticleVo();
         BeanUtils.copyProperties(article, articleVo);
         List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
-//        List<String> tagNames = new ArrayList<>();
-//        for (TagVo tagVo : tags) {
-//            tagNames.add(tagVo.getTagName());
-//        }
         articleVo.setTags(tags);
         articleVo.setAuthor(sysUserInfoService.findSysUserInfoById(article.getAuthorId()).getNickname());
-        articleVo.setCategoryName(categoryService.getCategoryById(article.getId()).getCategoryName());
+        articleVo.setCategoryName(categoryService.getCategoryById(article.getCategoryId()).getCategoryName());
         return articleVo;
     }
 
@@ -173,9 +174,59 @@ public class ArticleServiceImpl implements ArticleService {
         return new PageVo<>(articleVoList, total);
     }
 
+    @Override
+    public void postArticle(ArticleVo articleVo) {
+        List<TagVo> tagVoList = articleVo.getTags();
+        Article article = new Article();
+        BeanUtils.copyProperties(articleVo, article);
+        article.setCategoryId(getCategoryId(articleVo.getCategoryName()));
+        article.setAuthorId(sysUserService.getCurrentUser().getId());
+        article.setBodyId(addBody(articleVo.getBody().getContent()));
+        articleMapper.insert(article);
+        for (TagVo tagVo : tagVoList) {
+            Tag tag = tagService.findTagByTagName(tagVo.getTagName());
+            if (tag != null) {
+                tagService.associateTagAndArticle(article.getId(), tag.getId());
+            } else {
+                tag = new Tag();
+                tag.setTagName(tagVo.getTagName());
+                tagService.associateTagAndArticle(article.getId(), tagService.insert(tag));
+            }
+        }
+    }
+
+    /**
+     * 更新文章
+     *
+     * @param articleVo articleVo
+     */
+    @Override
+    public void updateArticle(ArticleVo articleVo) {
+
+    }
+
+    private Long addBody(String content) {
+        ArticleBody articleBody = new ArticleBody();
+        articleBody.setContent(content);
+        articleBodyMapper.insert(articleBody);
+        return articleBody.getId();
+    }
+
+    private Long getCategoryId(String categoryName) {
+        Category category = categoryService.getCategoryByName(categoryName);
+        if (category == null) {
+            category = new Category();
+            category.setCategoryName(categoryName);
+            return categoryService.insert(category);
+
+        } else {
+            return category.getId();
+        }
+    }
+
     private ArticleBodyVo getArticleBodyById(Long id) {
         LambdaQueryWrapper<ArticleBody> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ArticleBody::getArticleId, id);
+        queryWrapper.eq(ArticleBody::getId, id);
         ArticleBody articleBody = articleBodyMapper.selectOne(queryWrapper);
         ArticleBodyVo articleBodyVo = new ArticleBodyVo();
         BeanUtils.copyProperties(articleBody, articleBodyVo);

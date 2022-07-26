@@ -86,10 +86,31 @@ public class ArticleController {
         return Result.success(articleService.search(keyword, status, tagId, categoryId, new PageParams(page, pageSize)));
     }
 
+    /**
+     * @return 获取文章归档
+     */
     @GetMapping("getArchives")
     public Result<PageVo<ArticleVo>> getArchives() {
         return Result.success(articleService.getArchives());
     }
 
+    /**
+     * @param articleVo articleVo
+     * @return String
+     */
+    @PostMapping("postArticle")
+    public Result<?> postArticle(@RequestBody ArticleVo articleVo) {
+        articleService.postArticle(articleVo);
+        return Result.success(null, "success");
+    }
 
+    /**
+     * @param articleVo articleVo
+     * @return String
+     */
+    @PutMapping("updateArticle")
+    public Result<?> updateArticle(@RequestBody ArticleVo articleVo) {
+        articleService.updateArticle(articleVo);
+        return Result.success(null, "success");
+    }
 }

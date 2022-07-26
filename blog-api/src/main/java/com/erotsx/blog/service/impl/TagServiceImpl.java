@@ -92,13 +92,48 @@ public class TagServiceImpl implements TagService {
         return tagVo;
     }
 
+    @Override
+    public Tag findTagByTagName(String tagName) {
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Tag::getTagName, tagName);
+        return tagMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 关联article和tag，向blog_article_tag表中添加数据
+     *
+     * @param articleId articleId
+     * @param tagId     tagId
+     */
+    @Override
+    public void associateTagAndArticle(Long articleId, Long tagId) {
+        tagMapper.associateTagAndArticle(articleId, tagId);
+    }
+
+    /**
+     * 添加新的tag，并返回添加后tag的Id
+     *
+     * @param tag tag
+     * @return id
+     */
+    @Override
+    public Long insert(Tag tag) {
+        tagMapper.insert(tag);
+        return tag.getId();
+    }
+
     private List<TagVo> getTagVoList(List<Tag> tagList) {
         List<TagVo> tags = new ArrayList<>();
         for (Tag tag : tagList) {
             TagVo tagVo = new TagVo();
             BeanUtils.copyProperties(tag, tagVo);
+            tagVo.setArticleCount(getTagArticleCount(tag.getId()));
             tags.add(tagVo);
         }
         return tags;
+    }
+
+    private Integer getTagArticleCount(Long id) {
+        return tagMapper.getTagArticleCount(id);
     }
 }

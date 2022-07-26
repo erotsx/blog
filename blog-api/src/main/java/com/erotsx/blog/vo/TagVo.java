@@ -16,4 +16,6 @@ public class TagVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
+    private Integer articleCount;
+
 }

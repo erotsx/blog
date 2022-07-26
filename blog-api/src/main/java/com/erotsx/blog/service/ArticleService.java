@@ -25,4 +25,13 @@ public interface ArticleService {
     void deleteArticleById(Long id);
 
     PageVo<ArticleVo> getArchives();
+
+    void postArticle(ArticleVo articleVo);
+
+    /**
+     * 更新文章
+     *
+     * @param articleVo articleVo
+     */
+    void updateArticle(ArticleVo articleVo);
 }
