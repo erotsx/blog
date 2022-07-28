@@ -63,6 +63,23 @@
         style="width: 100%;"
         @sort-change="sortChange"
       >
+        <el-table-column
+          prop="cover"
+          label="文章封面"
+          width="180"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-image
+              class="article-cover"
+              :src="
+                scope.row.cover
+                  ? scope.row.cover
+                  : 'https://static.talkxj.com/articles/c5cc2b2561bd0e3060a500198a4ad37d.png'
+              "
+            />
+          </template>
+        </el-table-column>
         <el-table-column prop="title" align="center" label="标题" width="220">
           <template v-slot:default="slotProps">
             <el-link :underline="false" @click="onClick(slotProps.row)">{{ slotProps.row.title }}</el-link>
@@ -71,6 +88,7 @@
         <el-table-column align="center" width="125" label="分类">
           <template v-slot:default="slotProps">
             <el-tag
+              v-if="slotProps.row.categoryName!==null"
               style="margin-left: 3px"
               align="center"
               type="warning"
@@ -458,3 +476,20 @@ export default {
   }
 }
 </script>
+<style scoped>
+.article-cover {
+  position: relative;
+  width: 100%;
+  height: 90px;
+  border-radius: 4px;
+}
+.article-cover::after {
+  content: "";
+  background: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+</style>

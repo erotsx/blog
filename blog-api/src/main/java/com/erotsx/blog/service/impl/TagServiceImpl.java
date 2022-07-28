@@ -122,6 +122,16 @@ public class TagServiceImpl implements TagService {
         return tag.getId();
     }
 
+    /**
+     * 根据articleId删除blog_article_tag中的关联
+     *
+     * @param articleId articleId
+     */
+    @Override
+    public void deleteAssociation(Long articleId) {
+        tagMapper.deleteAssociation(articleId);
+    }
+
     private List<TagVo> getTagVoList(List<Tag> tagList) {
         List<TagVo> tags = new ArrayList<>();
         for (Tag tag : tagList) {

@@ -18,4 +18,6 @@ public interface TagMapper extends BaseMapper<Tag> {
     Integer getTagArticleCount(Long id);
 
     void associateTagAndArticle(Long articleId, Long tagId);
+
+    void deleteAssociation(Long articleId);
 }

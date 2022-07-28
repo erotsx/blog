@@ -190,7 +190,7 @@
 import * as imageConversion from 'image-conversion'
 import { fetchCategory } from '@/api/category'
 import { fetchTags } from '@/api/tags'
-import { getArticle, postArticle } from '@/api/article'
+import { getArticle, postArticle, updateArticle } from '@/api/article'
 
 export default {
   data: function() {
@@ -204,12 +204,12 @@ export default {
       article: {
         id: null,
         title: this.$moment(new Date()).format('YYYY-MM-DD'),
-        summary: '',
+        summary: null,
         commentCounts: 0,
-        createDate: '',
-        updateDate: '',
+        createDate: null,
+        updateDate: null,
         wordCounts: null,
-        author: '',
+        author: null,
         viewCounts: 0,
         body: {
           id: null,
@@ -326,27 +326,39 @@ export default {
         return false
       }
       this.article.status = '草稿'
-      this.axios.post('/api/admin/articles', this.article).then(({ data }) => {
-        if (data.flag) {
-          if (this.article.id === null) {
-            this.$store.commit('removeTab', '发布文章')
-          } else {
-            this.$store.commit('removeTab', '修改文章')
-          }
+      this.article.wordCounts = this.deleteHTMLTag(this.article.body.content).length
+      if (this.article.id === null) {
+        console.log(this.article)
+        postArticle(this.article).then(data => {
           sessionStorage.removeItem('article')
-          this.$router.push({ path: '/article-list' })
+          this.$router.push({ path: '/articles/list' })
           this.$notify.success({
             title: '成功',
-            message: '保存草稿成功'
+            message: data.message
           })
-        } else {
+          this.addOrEdit = false
+        }).catch(error => {
           this.$notify.error({
             title: '失败',
-            message: '保存草稿失败'
+            message: error.message
           })
-        }
-      })
-
+        })
+      } else {
+        updateArticle(this.article).then(data => {
+          sessionStorage.removeItem('article')
+          this.$router.push({ path: '/articles/list' })
+          this.$notify.success({
+            title: '成功',
+            message: data.message
+          })
+          this.addOrEdit = false
+        }).catch(error => {
+          this.$notify.error({
+            title: '失败',
+            message: error.message
+          })
+        })
+      }
       // 关闭自动保存功能
       this.autoSave = false
     },
@@ -371,10 +383,11 @@ export default {
       //   this.$message.error('文章封面不能为空')
       //   return false
       // }
+      this.article.status = '已发布'
+      this.article.wordCounts = this.deleteHTMLTag(this.article.body.content).length
       if (this.article.id === null) {
         console.log(this.article)
         postArticle(this.article).then(data => {
-          this.$store.commit('removeTab', '发布文章')
           sessionStorage.removeItem('article')
           this.$router.push({ path: '/articles/list' })
           this.$notify.success({
@@ -389,31 +402,28 @@ export default {
           })
         })
       } else {
-        this.$store.commit('removeTab', '修改文章')
+        updateArticle(this.article).then(data => {
+          sessionStorage.removeItem('article')
+          this.$router.push({ path: '/articles/list' })
+          this.$notify.success({
+            title: '成功',
+            message: data.message
+          })
+          this.addOrEdit = false
+        }).catch(error => {
+          this.$notify.error({
+            title: '失败',
+            message: error.message
+          })
+        })
       }
-      // this.axios.post('/api/admin/articles', this.article).then(({ data }) => {
-      //   if (data.flag) {
-      //     if (this.article.id === null) {
-      //       this.$store.commit('removeTab', '发布文章')
-      //     } else {
-      //       this.$store.commit('removeTab', '修改文章')
-      //     }
-      //     sessionStorage.removeItem('article')
-      //     this.$router.push({ path: '/article-list' })
-      //     this.$notify.success({
-      //       title: '成功',
-      //       message: data.message
-      //     })
-      //   } else {
-      //     this.$notify.error({
-      //       title: '失败',
-      //       message: data.message
-      //     })
-      //   }
-      //   this.addOrEdit = false
-      // })
-      // 关闭自动保存功能
       this.autoSave = false
+    },
+    deleteHTMLTag(content) {
+      return content
+        .replace(/<\/?[^>]*>/g, '')
+        .replace(/[|]*\n/, '')
+        .replace(/&npsp;/gi, '')
     },
     autoSaveArticle() {
       // 自动上传文章

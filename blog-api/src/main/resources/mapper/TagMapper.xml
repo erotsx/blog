@@ -11,6 +11,11 @@
         from blog_article_tag
         where tag_id = #{id}
     </delete>
+    <delete id="deleteAssociation">
+        delete
+        from blog_article_tag
+        where article_id = #{articleId}
+    </delete>
 
     <select id="findTagsByArticleId" parameterType="long" resultType="com.erotsx.blog.entity.Tag">
         select id ,avatar,tag_name as tagName,create_date as createDate

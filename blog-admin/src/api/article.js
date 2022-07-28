@@ -29,6 +29,14 @@ export function postArticle(data) {
   })
 }
 
+export function updateArticle(data) {
+  return request({
+    url: '/articles/updateArticle/',
+    method: 'put',
+    data
+  })
+}
+
 export function removeArticle(id) {
   return request({
     url: '/articles/delete/' + id,
@@ -51,10 +59,3 @@ export function createArticle(data) {
   })
 }
 
-export function updateArticle(data) {
-  return request({
-    url: '/vue-element-admin/article/update',
-    method: 'post',
-    data
-  })
-}

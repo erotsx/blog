@@ -4,7 +4,7 @@
     <div class="banner" :style="articleCover">
       <div class="article-info-container">
         <!-- 文章标题 -->
-        <div class="article-title">{{ article.summary }}</div>
+        <div class="article-title">{{ article.title }}</div>
         <div class="article-info">
           <div class="first-line">
             <!-- 发表时间 -->

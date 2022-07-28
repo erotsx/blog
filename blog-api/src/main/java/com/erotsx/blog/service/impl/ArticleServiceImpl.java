@@ -1,9 +1,8 @@
 package com.erotsx.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.ArticleBodyMapper;
 import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.entity.Article;
@@ -52,13 +51,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public PageVo<ArticleVo> getArticles(int page, int pageSize) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getStatus, "已发布");
         queryWrapper.orderByDesc(Article::getIsTop, Article::getCreateDate);
         return getArticleVoListByPage(page, pageSize, queryWrapper);
     }
 
     private PageVo<ArticleVo> getArticleVoListByPage(int page, int pageSize, LambdaQueryWrapper<Article> queryWrapper) {
-        Page<Article> pageTemp = new Page<>(page, pageSize);
-        Page<Article> articlePage = articleMapper.selectPage(pageTemp, queryWrapper);
+        Page<Article> articlePage = articleMapper.selectPage(new Page<>(page, pageSize), queryWrapper);
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article article : articlePage.getRecords()) {
             ArticleVo articleVo = getArticleVo(article);
@@ -70,6 +69,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleVo> getHotArticles(int limit) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getStatus, "已发布");
         queryWrapper.orderByDesc(Article::getViewCounts);
         queryWrapper.select(Article::getId, Article::getTitle);
         queryWrapper.last("limit " + limit);
@@ -81,6 +81,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleVo> getNewArticles(int limit) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getStatus, "已发布");
         queryWrapper.orderByDesc(Article::getCreateDate);
         queryWrapper.select(Article::getId, Article::getTitle, Article::getCreateDate, Article::getCover);
         queryWrapper.last("limit " + limit);
@@ -116,7 +117,11 @@ public class ArticleServiceImpl implements ArticleService {
         List<TagVo> tags = tagService.findTagsByArticleId(article.getId());
         articleVo.setTags(tags);
         articleVo.setAuthor(sysUserInfoService.findSysUserInfoById(article.getAuthorId()).getNickname());
-        articleVo.setCategoryName(categoryService.getCategoryById(article.getCategoryId()).getCategoryName());
+        if (article.getCategoryId() != null) {
+            articleVo.setCategoryName(categoryService.getCategoryById(article.getCategoryId()).getCategoryName());
+        } else {
+            articleVo.setCategoryName(null);
+        }
         return articleVo;
     }
 
@@ -165,6 +170,7 @@ public class ArticleServiceImpl implements ArticleService {
     public PageVo<ArticleVo> getArchives() {
         Long total = Long.valueOf(articleMapper.selectCount(new LambdaQueryWrapper<>()));
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getStatus, "已发布");
         queryWrapper.orderByDesc(Article::getCreateDate);
         List<Article> articles = articleMapper.selectList(queryWrapper);
         List<ArticleVo> articleVoList = new ArrayList<>();
@@ -179,19 +185,14 @@ public class ArticleServiceImpl implements ArticleService {
         List<TagVo> tagVoList = articleVo.getTags();
         Article article = new Article();
         BeanUtils.copyProperties(articleVo, article);
-        article.setCategoryId(getCategoryId(articleVo.getCategoryName()));
+        if (!StringUtils.isBlank(articleVo.getCategoryName())) {
+            article.setCategoryId(getCategoryId(articleVo.getCategoryName()));
+        }
         article.setAuthorId(sysUserService.getCurrentUser().getId());
         article.setBodyId(addBody(articleVo.getBody().getContent()));
         articleMapper.insert(article);
-        for (TagVo tagVo : tagVoList) {
-            Tag tag = tagService.findTagByTagName(tagVo.getTagName());
-            if (tag != null) {
-                tagService.associateTagAndArticle(article.getId(), tag.getId());
-            } else {
-                tag = new Tag();
-                tag.setTagName(tagVo.getTagName());
-                tagService.associateTagAndArticle(article.getId(), tagService.insert(tag));
-            }
+        if (!tagVoList.isEmpty()) {
+            associateTag(tagVoList, article);
         }
     }
 
@@ -202,7 +203,38 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public void updateArticle(ArticleVo articleVo) {
+        Article article = new Article();
+        BeanUtils.copyProperties(articleVo, article);
+        if (!StringUtils.isBlank(articleVo.getCategoryName())) {
+            article.setCategoryId(getCategoryId(articleVo.getCategoryName()));
+        } else {
+            LambdaUpdateWrapper<Article> updateWrapper = new LambdaUpdateWrapper<>();
+            updateWrapper.eq(Article::getId, article.getId()).set(Article::getCategoryId, null);
+            articleMapper.update(null, updateWrapper);
+        }
+        ArticleBody articleBody = new ArticleBody();
+        articleBody.setId(articleVo.getBody().getId());
+        articleBody.setContent(articleVo.getBody().getContent());
+        articleBodyMapper.updateById(articleBody);
+        articleMapper.updateById(article);
+        List<TagVo> tagVoList = articleVo.getTags();
+        if (!tagVoList.isEmpty()) {
+            tagService.deleteAssociation(article.getId());
+            associateTag(tagVoList, article);
+        }
+    }
 
+    private void associateTag(List<TagVo> tagVoList, Article article) {
+        for (TagVo tagVo : tagVoList) {
+            Tag tag = tagService.findTagByTagName(tagVo.getTagName());
+            if (tag != null) {
+                tagService.associateTagAndArticle(article.getId(), tag.getId());
+            } else {
+                tag = new Tag();
+                tag.setTagName(tagVo.getTagName());
+                tagService.associateTagAndArticle(article.getId(), tagService.insert(tag));
+            }
+        }
     }
 
     private Long addBody(String content) {

@@ -40,4 +40,11 @@ public interface TagService {
      * @return id
      */
     Long insert(Tag tag);
+
+    /**
+     * 根据articleId删除blog_article_tag中的关联
+     *
+     * @param articleId articleId
+     */
+    void deleteAssociation(Long articleId);
 }

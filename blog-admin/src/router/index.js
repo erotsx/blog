@@ -49,7 +49,7 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: '仪表盘',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '仪表盘', icon: 'dashboard' }
     }]
@@ -72,37 +72,38 @@ export const constantRoutes = [
         path: 'write',
         name: 'Write',
         component: () => import('@/views/article/article'),
-        meta: { title: '写文章', icon: 'tree' }
+        meta: { title: '写文章', icon: 'write' }
       },
       {
         path: 'write/:articleId',
         name: 'Write',
-        component: () => import('@/views/article/article')
+        component: () => import('@/views/article/article'),
+        meta: { title: '修改文章' }
       },
       {
         path: 'categories',
         name: 'Categories',
         component: () => import('@/views/categories/index'),
-        meta: { title: '分类目录', icon: '' }
+        meta: { title: '分类目录', icon: 'category' }
       },
       {
         path: 'tags',
         name: 'Tags',
         component: () => import('@/views/tags/index'),
-        meta: { title: '标签', icon: '' }
+        meta: { title: '标签', icon: 'tag' }
       }
     ]
   },
 
   {
-    path: '/form',
+    path: '/album',
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: '',
+        name: '相册',
+        component: () => import('@/views/album/Album'),
+        meta: { title: '相册', icon: 'form' }
       }
     ]
   },
