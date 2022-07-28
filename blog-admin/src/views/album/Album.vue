@@ -12,15 +12,6 @@
         新建相册
       </el-button>
       <div style="margin-left:auto">
-        <el-button
-          type="text"
-          size="small"
-          icon="el-icon-delete"
-          style="margin-right:1rem"
-          @click="checkDelete"
-        >
-          回收站
-        </el-button>
         <el-input
           v-model="keywords"
           prefix-icon="el-icon-search"
@@ -43,7 +34,7 @@
     <!-- 相册列表 -->
     <el-row v-loading="loading" class="album-container" :gutter="12">
       <!-- 空状态 -->
-      <el-empty v-if="albumList == null" description="暂无相册" />
+      <el-empty v-if="albumList.length === 0" description="暂无相册" />
       <el-col v-for="item of albumList" :key="item.id" :md="6">
         <div class="album-item" @click="checkPhoto(item)">
           <!-- 相册操作 -->
@@ -85,10 +76,10 @@
       <div slot="title" ref="albumTitle" class="dialog-title-container" />
       <el-form label-width="80px" size="medium" :model="albumForum">
         <el-form-item label="相册名称">
-          <el-input v-model="albumForum.albumName" style="width:220px" />
+          <el-input v-model="albumForum.name" style="width:220px" />
         </el-form-item>
         <el-form-item label="相册描述">
-          <el-input v-model="albumForum.albumDesc" style="width:220px" />
+          <el-input v-model="albumForum.description" style="width:220px" />
         </el-form-item>
         <el-form-item label="相册封面">
           <el-upload
@@ -100,13 +91,13 @@
             multiple
             :on-success="uploadCover"
           >
-            <i v-if="albumForum.albumCover === ''" class="el-icon-upload" />
-            <div v-if="albumForum.albumCover === ''" class="el-upload__text">
+            <i v-if="albumForum.cover === ''" class="el-icon-upload" />
+            <div v-if="albumForum.cover === ''" class="el-upload__text">
               将文件拖到此处，或<em>点击上传</em>
             </div>
             <img
               v-else
-              :src="albumForum.albumCover"
+              :src="albumForum.cover"
               width="360px"
               height="180px"
             >
@@ -139,48 +130,131 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :visible.sync="selectPhoto" width="1280">
+      <div slot="title" class="dialog-title-container">
+        选择图片
+      </div>
+      <div class="select-photo-container">
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="3"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+        >
+          <el-button size="small" type="primary" icon="el-icon-plus">点击上传</el-button>
+        </el-upload>
+        <div style="margin-left:auto">
+          <el-input
+            v-model="keyword"
+            prefix-icon="el-icon-search"
+            size="small"
+            placeholder="请输入图片关键词"
+            style="width:200px"
+            @keyup.enter.native="searchAlbums"
+          />
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-search"
+            style="margin-left:1rem"
+            @click="searchAlbums"
+          >
+            搜索
+          </el-button>
+        </div>
+      </div>
+      <el-divider />
+      <el-row v-loading="selectLoading" class="photo-container" :gutter="10">
+        <el-empty v-if="selectPhotoList.length === 0" description="暂无照片" />
+        <el-checkbox-group
+          v-model="selectPhotoIdList"
+          @change="handleCheckedPhotoChange"
+        >
+          <el-col v-for="item of selectPhotoList" :key="item.id" :md="4">
+            <el-checkbox class="photo-radio" :label="item.id">
+              <div class="photo-item">
+                <!-- 照片操作 -->
+                <div class="photo-operation">
+                  <el-dropdown @command="handleCommand">
+                    <i class="el-icon-more" style="color:#000000" />
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item :command="JSON.stringify(item)">
+                        <i class="el-icon-edit" />编辑
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+                <el-image
+                  fit="contain"
+                  class="photo-img"
+                  :src="item.url"
+                  :preview-photo-src-list="selectPhotoList"
+                />
+                <div class="photo-name">{{ item.name }}</div>
+              </div>
+            </el-checkbox>
+          </el-col>
+        </el-checkbox-group>
+      </el-row>
+
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 import * as imageConversion from 'image-conversion'
-import { searchAlbum } from '@/api/album'
+import { addAlbum, deleteAlbum, searchAlbum, updateAlbum } from '@/api/album'
+import { searchSysPhotos } from '@/api/photo'
 
 export default {
   data: function() {
     return {
       keywords: '',
+      keyword: null,
       loading: true,
       isdelete: false,
+      selectLoading: false,
+      selectPhoto: true,
       addOrEdit: false,
       albumForum: {
         id: null,
-        albumName: '',
-        albumDesc: '',
-        albumCover: '',
+        name: '',
+        description: '',
+        cover: '',
         status: 1
       },
       albumList: [],
+      selectPhotoList: [],
+      selectPhotoIdList: [],
       current: 1,
+      page: 1,
+      pageSize: 8,
       size: 8,
-      count: 0
+      count: 0,
+      total: 0
     }
   },
   created() {
     this.listAlbums()
+    this.listSelectPhotos()
   },
   methods: {
     openModel(item) {
       if (item) {
-        console.log(item)
         this.albumForum = JSON.parse(item)
         this.$refs.albumTitle.innerHTML = '修改相册'
       } else {
         this.albumForum = {
           id: null,
-          albumName: '',
-          albumLabel: '',
-          albumCover: '',
+          name: '',
+          description: '',
+          cover: '',
           status: 1
         }
         this.$refs.albumTitle.innerHTML = '新建相册'
@@ -188,69 +262,73 @@ export default {
       this.addOrEdit = true
     },
     checkPhoto(item) {
-      this.$router.push({ path: '/albums/' + item.id })
-    },
-    checkDelete() {
-      this.$router.push({ path: '/photos/delete' })
+      this.$router.push({ path: '/album/' + item.id })
     },
     listAlbums() {
       const params = {
+        keyword: this.keywords,
         page: this.current,
-        pageSize: this.size,
-        keyword: this.keywords
+        pageSize: this.size
       }
       searchAlbum(params).then(data => {
         this.albumList = data.data.items
         this.count = data.data.total
         this.loading = false
       })
-      // this.axios
-      //   .get('/api/admin/photos/albums', {
-      //     params: {
-      //       current: this.current,
-      //       size: this.size,
-      //       keywords: this.keywords
-      //     }
-      //   })
-      //   .then(({ data }) => {
-      //     this.albumList = data.data.recordList
-      //     this.count = data.data.count
-      //     this.loading = false
-      //   })
     },
     addOrEditAlbum() {
-      if (this.albumForum.albumName.trim() === '') {
+      console.log(this.albumForum)
+      if (this.albumForum.name.trim() === '') {
         this.$message.error('相册名称不能为空')
         return false
       }
-      if (this.albumForum.albumDesc.trim() === '') {
+      if (this.albumForum.description.trim() === '') {
         this.$message.error('相册描述不能为空')
         return false
       }
-      if (this.albumForum.albumCover == null) {
-        this.$message.error('相册封面不能为空')
-        return false
+      if (this.albumForum.id === null) {
+        addAlbum(this.albumForum).then(data => {
+          this.$notify.success({
+            title: '成功',
+            message: data.message
+          })
+          this.listAlbums()
+        }).catch(error => {
+          this.$notify.error({
+            title: '失败',
+            message: error.message
+          })
+        })
+      } else {
+        updateAlbum(this.albumForum).then(data => {
+          this.$notify.success({
+            title: '成功',
+            message: data.message
+          })
+          this.listAlbums()
+        }).catch(error => {
+          this.$notify.error({
+            title: '失败',
+            message: error.message
+          })
+        })
       }
-      // this.axios
-      //   .post('/api/admin/photos/albums', this.albumForum)
-      //   .then(({ data }) => {
-      //     if (data.flag) {
-      //       this.$notify.success({
-      //         title: '成功',
-      //         message: data.message
-      //       })
-      //       this.listAlbums()
-      //     } else {
-      //       this.$notify.error({
-      //         title: '失败',
-      //         message: data.message
-      //       })
-      //     }
-      //   })
       this.addOrEdit = false
     },
     uploadCover(response) {
       this.albumForum.albumCover = response.data
+    },
+    listSelectPhotos() {
+      const query = {
+        page: this.page,
+        pageSize: this.pageSize,
+        keyword: this.keyword
+      }
+      searchSysPhotos(query).then(data => {
+        this.selectPhotoList = data.data.items
+        this.total = data.data.total
+        // this.loading = false
+      })
     },
     beforeUpload(file) {
       return new Promise(resolve => {
@@ -265,35 +343,38 @@ export default {
           })
       })
     },
+    handleCheckedPhotoChange(value) {
+      const checkedCount = value.length
+      this.checkAll = checkedCount === this.photoIdList.length
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.photoIdList.length
+    },
     handleCommand(command) {
+      console.log(command)
       const type = command.substring(0, 6)
       const data = command.substring(6)
       if (type === 'delete') {
         this.albumForum.id = data
         this.isdelete = true
       } else {
-        console.log(data)
+        // console.log(data)
         this.openModel(data)
       }
     },
     deleteAlbum() {
-      // this.axios
-      //   .delete('/api/admin/photos/albums/' + this.albumForum.id)
-      //   .then(({ data }) => {
-      //     if (data.flag) {
-      //       this.$notify.success({
-      //         title: '成功',
-      //         message: data.message
-      //       })
-      //       this.listAlbums()
-      //     } else {
-      //       this.$notify.error({
-      //         title: '失败',
-      //         message: data.message
-      //       })
-      //     }
-      //     this.isdelete = false
-      //   })
+      deleteAlbum(this.albumForum.id).then(data => {
+        this.$notify.success({
+          title: '成功',
+          message: data.message
+        })
+        this.listAlbums()
+      }).catch(error => {
+        this.$notify.error({
+          title: '失败',
+          message: error.message
+        })
+      })
+      this.isdelete = false
     },
     searchAlbums() {
       this.current = 1
@@ -383,4 +464,32 @@ export default {
   margin-bottom: 1.25rem;
   margin-top: 2.25rem;
 }
+
+.select-photo-container{
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.main-card {
+  min-height: calc(100vh - 50px);
+}
+/*.photo-radio{*/
+/*  position: relative;*/
+/*  width: 100%;*/
+/*}*/
+
+.photo-item {
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.photo-img {
+  width: 100%;
+  height: 7rem;
+  border-radius: 4px;
+}
+
 </style>

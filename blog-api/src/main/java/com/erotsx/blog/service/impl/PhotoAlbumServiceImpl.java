@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.dao.PhotoAlbumMapper;
 import com.erotsx.blog.dao.PhotoMapper;
-import com.erotsx.blog.entity.Article;
 import com.erotsx.blog.entity.Photo;
 import com.erotsx.blog.entity.PhotoAlbum;
 import com.erotsx.blog.service.PhotoAlbumService;
@@ -37,7 +36,9 @@ public class PhotoAlbumServiceImpl implements PhotoAlbumService {
      */
     @Override
     public PageVo<PhotoAlbumVo> search(String keyword, int page, int pageSize) {
+        System.out.println(keyword);
         LambdaQueryWrapper<PhotoAlbum> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(PhotoAlbum::getStatus, 1, 0);
         if (!StringUtils.isBlank(keyword)) {
             queryWrapper.like(PhotoAlbum::getName, keyword);
         }
@@ -59,6 +60,56 @@ public class PhotoAlbumServiceImpl implements PhotoAlbumService {
         PhotoAlbum photoAlbum = new PhotoAlbum();
         BeanUtils.copyProperties(photoAlbumVo, photoAlbum);
         photoAlbumMapper.insert(photoAlbum);
+    }
+
+    /**
+     * 更新相册信息
+     *
+     * @param photoAlbumVo photoAlbumVo
+     */
+    @Override
+    public void update(PhotoAlbumVo photoAlbumVo) {
+        PhotoAlbum photoAlbum = new PhotoAlbum();
+        BeanUtils.copyProperties(photoAlbumVo, photoAlbum);
+        photoAlbumMapper.updateById(photoAlbum);
+    }
+
+    /**
+     * 根据id删除相册
+     *
+     * @param id 相册id
+     */
+    @Override
+    public void delete(Long id) {
+        photoAlbumMapper.deleteById(id);
+    }
+
+    /**
+     * 根据相册id查询相册信息
+     *
+     * @param id 相册id
+     * @return 相册信息
+     */
+    @Override
+    public PhotoAlbumVo info(Long id) {
+        return getPhotoAlbumVo(photoAlbumMapper.selectById(id));
+    }
+
+    /**
+     * 获取所有相册信息
+     *
+     * @return 所有相册信息
+     */
+    @Override
+    public List<PhotoAlbumVo> getAllAlbums() {
+        LambdaQueryWrapper<PhotoAlbum> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(PhotoAlbum::getStatus, 1, 0);
+        List<PhotoAlbum> photoAlbumList = photoAlbumMapper.selectList(queryWrapper);
+        List<PhotoAlbumVo> photoAlbumVoList = new ArrayList<>();
+        for (PhotoAlbum photoAlbum : photoAlbumList) {
+            photoAlbumVoList.add(getPhotoAlbumVo(photoAlbum));
+        }
+        return photoAlbumVoList;
     }
 
     private PhotoAlbumVo getPhotoAlbumVo(PhotoAlbum photoAlbum) {

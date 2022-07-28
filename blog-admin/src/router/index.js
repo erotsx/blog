@@ -103,11 +103,23 @@ export const constantRoutes = [
         path: '',
         name: '相册',
         component: () => import('@/views/album/Album'),
-        meta: { title: '相册', icon: 'form' }
+        meta: { title: '相册', icon: 'album' }
       }
     ]
   },
-
+  {
+    path: '/album/',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: ':albumId',
+        name: '照片管理',
+        component: () => import('@/views/album/Photo'),
+        meta: { title: '照片管理' }
+      }
+    ]
+  },
   {
     path: '/nested',
     component: Layout,
