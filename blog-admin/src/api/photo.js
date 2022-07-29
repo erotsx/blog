@@ -46,7 +46,7 @@ export function movePhotos(data, albumId) {
 export function updatePhoto(data) {
   return request({
     url: '/photo/update',
-    method: 'post',
+    method: 'put',
     data
   })
 }

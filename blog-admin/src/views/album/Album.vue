@@ -82,31 +82,14 @@
           <el-input v-model="albumForum.description" style="width:220px" />
         </el-form-item>
         <el-form-item label="相册封面">
-          <el-upload
-            class="upload-cover"
-            drag
-            :show-file-list="false"
-            :before-upload="beforeUpload"
-            action="/api/admin/photos/albums/cover"
-            multiple
-            :on-success="uploadCover"
-          >
-            <i v-if="albumForum.cover === ''" class="el-icon-upload" />
-            <div v-if="albumForum.cover === ''" class="el-upload__text">
-              将文件拖到此处，或<em>点击上传</em>
-            </div>
-            <img
-              v-else
-              :src="albumForum.cover"
-              width="360px"
-              height="180px"
-            >
-          </el-upload>
+          <el-input v-model="albumForum.cover" placeholder="请输入内容" class="input-with-select">
+            <el-button slot="append" icon="el-icon-picture-outline-round" @click="selectCover" />
+          </el-input>
         </el-form-item>
         <el-form-item label="发布形式">
           <el-radio-group v-model="albumForum.status">
             <el-radio :label="1">公开</el-radio>
-            <el-radio :label="2">私密</el-radio>
+            <el-radio :label="0">私密</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -130,97 +113,30 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <el-dialog :visible.sync="selectPhoto" width="1280">
-      <div slot="title" class="dialog-title-container">
-        选择图片
-      </div>
-      <div class="select-photo-container">
-        <el-upload
-          class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList"
-        >
-          <el-button size="small" type="primary" icon="el-icon-plus">点击上传</el-button>
-        </el-upload>
-        <div style="margin-left:auto">
-          <el-input
-            v-model="keyword"
-            prefix-icon="el-icon-search"
-            size="small"
-            placeholder="请输入图片关键词"
-            style="width:200px"
-            @keyup.enter.native="searchAlbums"
-          />
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-search"
-            style="margin-left:1rem"
-            @click="searchAlbums"
-          >
-            搜索
-          </el-button>
-        </div>
-      </div>
-      <el-divider />
-      <el-row v-loading="selectLoading" class="photo-container" :gutter="10">
-        <el-empty v-if="selectPhotoList.length === 0" description="暂无照片" />
-        <el-checkbox-group
-          v-model="selectPhotoIdList"
-          @change="handleCheckedPhotoChange"
-        >
-          <el-col v-for="item of selectPhotoList" :key="item.id" :md="4">
-            <el-checkbox class="photo-radio" :label="item.id">
-              <div class="photo-item">
-                <!-- 照片操作 -->
-                <div class="photo-operation">
-                  <el-dropdown @command="handleCommand">
-                    <i class="el-icon-more" style="color:#000000" />
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="JSON.stringify(item)">
-                        <i class="el-icon-edit" />编辑
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-                <el-image
-                  fit="contain"
-                  class="photo-img"
-                  :src="item.url"
-                  :preview-photo-src-list="selectPhotoList"
-                />
-                <div class="photo-name">{{ item.name }}</div>
-              </div>
-            </el-checkbox>
-          </el-col>
-        </el-checkbox-group>
-      </el-row>
-
-    </el-dialog>
+    <SelectPhoto
+      v-show="dialog_visible"
+      :dialog_visible="dialog_visible"
+      @dialogVisibleEvent="showDialog"
+      @giveUrl="getUrl"
+    />
   </el-card>
 </template>
 
 <script>
 import * as imageConversion from 'image-conversion'
 import { addAlbum, deleteAlbum, searchAlbum, updateAlbum } from '@/api/album'
-import { searchSysPhotos } from '@/api/photo'
+import SelectPhoto from '@/components/Photo/selectPhoto'
 
 export default {
+  components: {
+    SelectPhoto
+  },
   data: function() {
     return {
       keywords: '',
-      keyword: null,
       loading: true,
       isdelete: false,
-      selectLoading: false,
-      selectPhoto: true,
+      dialog_visible: false,
       addOrEdit: false,
       albumForum: {
         id: null,
@@ -234,15 +150,20 @@ export default {
       selectPhotoIdList: [],
       current: 1,
       page: 1,
+      url: '',
       pageSize: 8,
       size: 8,
       count: 0,
       total: 0
     }
   },
+  watch: {
+    url() {
+      this.albumForum.cover = this.url
+    }
+  },
   created() {
     this.listAlbums()
-    this.listSelectPhotos()
   },
   methods: {
     openModel(item) {
@@ -264,6 +185,15 @@ export default {
     checkPhoto(item) {
       this.$router.push({ path: '/album/' + item.id })
     },
+    showDialog(visible) {
+      this.dialog_visible = visible
+    },
+    selectCover() {
+      this.showDialog(true)
+    },
+    getUrl(url) {
+      this.url = url
+    },
     listAlbums() {
       const params = {
         keyword: this.keywords,
@@ -277,7 +207,6 @@ export default {
       })
     },
     addOrEditAlbum() {
-      console.log(this.albumForum)
       if (this.albumForum.name.trim() === '') {
         this.$message.error('相册名称不能为空')
         return false
@@ -318,18 +247,6 @@ export default {
     uploadCover(response) {
       this.albumForum.albumCover = response.data
     },
-    listSelectPhotos() {
-      const query = {
-        page: this.page,
-        pageSize: this.pageSize,
-        keyword: this.keyword
-      }
-      searchSysPhotos(query).then(data => {
-        this.selectPhotoList = data.data.items
-        this.total = data.data.total
-        // this.loading = false
-      })
-    },
     beforeUpload(file) {
       return new Promise(resolve => {
         if (file.size / 1024 < this.config.UPLOAD_SIZE) {
@@ -350,7 +267,6 @@ export default {
         checkedCount > 0 && checkedCount < this.photoIdList.length
     },
     handleCommand(command) {
-      console.log(command)
       const type = command.substring(0, 6)
       const data = command.substring(6)
       if (type === 'delete') {
@@ -465,31 +381,7 @@ export default {
   margin-top: 2.25rem;
 }
 
-.select-photo-container{
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.25rem;
-}
-
 .main-card {
   min-height: calc(100vh - 50px);
 }
-/*.photo-radio{*/
-/*  position: relative;*/
-/*  width: 100%;*/
-/*}*/
-
-.photo-item {
-  width: 100%;
-  position: relative;
-  cursor: pointer;
-  margin-bottom: 1rem;
-}
-
-.photo-img {
-  width: 100%;
-  height: 7rem;
-  border-radius: 4px;
-}
-
 </style>
