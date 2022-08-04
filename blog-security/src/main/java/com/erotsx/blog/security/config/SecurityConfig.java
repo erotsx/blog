@@ -1,8 +1,11 @@
 package com.erotsx.blog.security.config;
 
+import com.erotsx.blog.security.component.DynamicSecurityService;
 import com.erotsx.blog.security.component.RestAuthenticationEntryPoint;
 import com.erotsx.blog.security.component.RestfulAccessDeniedHandler;
+import com.erotsx.blog.security.filter.DynamicSecurityFilter;
 import com.erotsx.blog.security.filter.JwtAuthenticationTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.Resource;
@@ -30,6 +34,12 @@ public class SecurityConfig {
 
     @Resource
     private WhiteListConfig whiteListConfig;
+
+    @Autowired(required = false)
+    private DynamicSecurityService dynamicSecurityService;
+
+    @Autowired(required = false)
+    private DynamicSecurityFilter dynamicSecurityFilter;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -57,7 +67,9 @@ public class SecurityConfig {
                 // 自定义权限拦截器JWT过滤器
                 .and()
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        if (dynamicSecurityService != null) {
+            registry.and().addFilterBefore(dynamicSecurityFilter, FilterSecurityInterceptor.class);
+        }
         return httpSecurity.build();
     }
-
 }

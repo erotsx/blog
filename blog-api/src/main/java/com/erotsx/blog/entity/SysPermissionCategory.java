@@ -5,17 +5,13 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class SysPermission {
+public class SysPermissionCategory {
 
     private Long id;
 
-    private Long categoryId;
+    private Date createDate;
 
     private String name;
 
-    private String url;
-
     private String description;
-
-    private Date createDate;
 }

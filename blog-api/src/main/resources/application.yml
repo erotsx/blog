@@ -30,3 +30,4 @@ security:
     - /category/getAllCategories
     - /articles/getArchives
     - /category/info/{id}
+    - /permissionCategory/**

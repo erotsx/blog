@@ -107,5 +107,12 @@ public class Result<T> {
         return new Result<>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
     }
 
+    /**
+     * 未授权返回结果
+     */
+    public static <T> Result<T> forbidden(T data, String msg) {
+        return new Result<>(ResultCode.FORBIDDEN.getCode(), msg, data);
+    }
+
 
 }

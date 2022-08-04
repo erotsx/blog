@@ -28,16 +28,15 @@ public class BlogSecurityConfig {
         return username -> adminService.loadUserByUsername(username);
     }
 
-//    @Bean
-//    public DynamicSecurityService dynamicSecurityService() {
-//        return () -> {
-//            Map<String, ConfigAttribute> map = new ConcurrentHashMap<>();
-//            //TODO: sysPermissionService listAll()
-//            List<SysPermission> permissions = sysPermissionService.listAll();
-//            for (SysPermission permission : permissions) {
-//                map.put(permission.getUrl(), new org.springframework.security.access.SecurityConfig(permission.getName()));
-//            }
-//            return map;
-//        };
-//    }
+    @Bean
+    public DynamicSecurityService dynamicSecurityService() {
+        return () -> {
+            Map<String, ConfigAttribute> map = new ConcurrentHashMap<>();
+            List<SysPermission> permissions = sysPermissionService.listAll();
+            for (SysPermission permission : permissions) {
+                map.put(permission.getUrl(), new org.springframework.security.access.SecurityConfig(permission.getId() + ":" + permission.getName()));
+            }
+            return map;
+        };
+    }
 }

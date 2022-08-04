@@ -34,10 +34,13 @@ public class DynamicSecurityFilter extends AbstractSecurityInterceptor implement
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
+        //OPTIONS请求直接放行
         if (request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
+            //执行下一个拦截器
             filterInvocation.getChain().doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
             return;
         }
+        //白名单请求直接放行
         PathMatcher pathMatcher = new AntPathMatcher();
         for (String path : whiteListConfig.getWhiteList()) {
             if (pathMatcher.match(path, request.getRequestURI())) {
@@ -45,8 +48,12 @@ public class DynamicSecurityFilter extends AbstractSecurityInterceptor implement
                 return;
             }
         }
+        //此处会首先调用的是 SecurityMetadataSource，来获取当前请求的鉴权规则
+        //然后通过Authentication获取当前登录用户所有权限数据
+        //最后调用AccessDecisionManager中的decide方法进行鉴权操作
         InterceptorStatusToken token = super.beforeInvocation(filterInvocation);
         try {
+            //执行下一个拦截器
             filterInvocation.getChain().doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());
         } finally {
             super.afterInvocation(token, null);

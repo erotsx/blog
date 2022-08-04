@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.bo.AdminUserDetails;
 import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.SysUserMapper;
+import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysUser;
 import com.erotsx.blog.security.utils.JWTUtils;
 import com.erotsx.blog.service.AdminService;
+import com.erotsx.blog.service.SysPermissionService;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.vo.AdminParams;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +41,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Resource
     private PasswordEncoder passwordEncoder;
+
+    @Resource
+    private SysPermissionService sysPermissionService;
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
@@ -99,6 +105,11 @@ public class AdminServiceImpl implements AdminService {
         if (sysUser == null) {
             Asserts.fail("用户不存在");
         }
-        return new AdminUserDetails(sysUser);
+        List<SysPermission> permissionList = getPermissionList(sysUser.getId());
+        return new AdminUserDetails(sysUser, permissionList);
+    }
+
+    private List<SysPermission> getPermissionList(Long id) {
+        return sysPermissionService.getPermissionList(id);
     }
 }

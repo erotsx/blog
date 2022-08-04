@@ -1,6 +1,5 @@
 package com.erotsx.blog.security.component;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.erotsx.blog.common.api.Result;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,7 +17,7 @@ public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
         response.setHeader("Cache-Control", "no-cache");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
-        response.getWriter().println(JSONObject.toJSONString(Result.forbidden(accessDeniedException.getMessage())));
+        response.getWriter().println(JSONObject.toJSONString(Result.forbidden(null, accessDeniedException.getMessage())));
         response.getWriter().flush();
     }
 }

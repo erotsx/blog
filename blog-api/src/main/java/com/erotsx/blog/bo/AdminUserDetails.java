@@ -1,23 +1,32 @@
 package com.erotsx.blog.bo;
 
+import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysUser;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AdminUserDetails implements UserDetails {
 
     private SysUser sysUser;
 
-    public AdminUserDetails(SysUser sysUser) {
+    private List<SysPermission> permissionList;
+
+    public AdminUserDetails(SysUser sysUser, List<SysPermission> permissionList) {
         this.sysUser = sysUser;
+        this.permissionList = permissionList;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return permissionList.stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getId() + ":" + permission.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
