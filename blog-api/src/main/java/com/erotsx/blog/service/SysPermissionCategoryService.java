@@ -1,6 +1,9 @@
 package com.erotsx.blog.service;
 
 import com.erotsx.blog.entity.SysPermissionCategory;
+import com.erotsx.blog.vo.SysPermissionCategoryVo;
+
+import java.util.List;
 
 public interface SysPermissionCategoryService {
     /**
@@ -23,4 +26,11 @@ public interface SysPermissionCategoryService {
      * @param id Id
      */
     void delete(Long id);
+
+    /**
+     * 获取所有权限目录及其权限列表
+     *
+     * @return 所有权限目录及其权限列表
+     */
+    List<SysPermissionCategoryVo> listAll();
 }

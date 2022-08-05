@@ -3,9 +3,11 @@ package com.erotsx.blog.controller;
 import com.erotsx.blog.common.api.Result;
 import com.erotsx.blog.entity.SysPermissionCategory;
 import com.erotsx.blog.service.SysPermissionCategoryService;
+import com.erotsx.blog.vo.SysPermissionCategoryVo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("permissionCategory")
@@ -48,5 +50,15 @@ public class SysPermissionCategoryController {
     public Result<?> delete(@PathVariable("id") Long id) {
         sysPermissionCategoryService.delete(id);
         return Result.success(null, "删除成功");
+    }
+
+    /**
+     * 获取所有权限目录及其权限列表
+     *
+     * @return 所有权限目录及其权限列表
+     */
+    @GetMapping("listAll")
+    public Result<List<SysPermissionCategoryVo>> listAll() {
+        return Result.success(sysPermissionCategoryService.listAll());
     }
 }

@@ -2,7 +2,7 @@ package com.erotsx.blog.config;
 
 import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.security.component.DynamicSecurityService;
-import com.erotsx.blog.service.AdminService;
+import com.erotsx.blog.service.SysAdminService;
 import com.erotsx.blog.service.SysPermissionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlogSecurityConfig {
 
     @Resource
-    private AdminService adminService;
+    private SysAdminService sysAdminService;
 
     @Resource
     private SysPermissionService sysPermissionService;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> adminService.loadUserByUsername(username);
+        return username -> sysAdminService.loadUserByUsername(username);
     }
 
     @Bean

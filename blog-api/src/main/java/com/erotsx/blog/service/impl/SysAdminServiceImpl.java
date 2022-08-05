@@ -6,9 +6,10 @@ import com.erotsx.blog.bo.AdminUserDetails;
 import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysPermission;
+import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.entity.SysUser;
 import com.erotsx.blog.security.utils.JWTUtils;
-import com.erotsx.blog.service.AdminService;
+import com.erotsx.blog.service.SysAdminService;
 import com.erotsx.blog.service.SysPermissionService;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.vo.AdminParams;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 @Transactional
-public class AdminServiceImpl implements AdminService {
+public class SysAdminServiceImpl implements SysAdminService {
 
     @Resource
     private SysUserService sysUserService;
@@ -107,6 +108,29 @@ public class AdminServiceImpl implements AdminService {
         }
         List<SysPermission> permissionList = getPermissionList(sysUser.getId());
         return new AdminUserDetails(sysUser, permissionList);
+    }
+
+    /**
+     * 修改用户角色
+     *
+     * @param userId     用户id
+     * @param roleIdList 角色id列表
+     */
+    @Override
+    public void updateRole(Long userId, List<Long> roleIdList) {
+        sysUserMapper.deleteRoleRelation(userId);
+        sysUserMapper.insertRoleRelation(userId, roleIdList);
+    }
+
+    /**
+     * 获取用户角色
+     *
+     * @param id 用户id
+     * @return 角色列表
+     */
+    @Override
+    public List<SysRole> listRoles(Long id) {
+        return sysUserMapper.listRoles(id);
     }
 
     private List<SysPermission> getPermissionList(Long id) {

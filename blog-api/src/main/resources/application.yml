@@ -31,3 +31,7 @@ security:
     - /articles/getArchives
     - /category/info/{id}
     - /permissionCategory/**
+    - /role/**
+    - /permission/**
+    - /admin/**
+    - /permissionCategory/**
