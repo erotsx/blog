@@ -129,12 +129,11 @@
     </el-dialog>
     <!-- 资源对话框 -->
     <el-dialog :visible.sync="roleResource" width="30%" top="9vh">
-      <div slot="title" class="dialog-title-container">修改资源权限</div>
-      <el-form label-width="80px" size="medium" :model="permissionIdList">
-        <el-form-item label="资源权限">
+      <div slot="title" class="dialog-title-container">修改接口权限</div>
+      <el-form v-loading="permissionLoading" label-width="80px" size="medium">
+        <el-form-item label="接口权限">
           <el-tree
             ref="resourceTree"
-            :label="name"
             :props="{
               label: 'name',
             }"
@@ -156,7 +155,7 @@
 </template>
 
 <script>
-import { createRole, deleteRole, searchRoles, updateRole } from '@/api/role'
+import { createRole, deleteRole, listPermissions, searchRoles, updatePermissions, updateRole } from '@/api/role'
 import { listCategoryPermissions } from '@/api/permission'
 
 export default {
@@ -164,6 +163,7 @@ export default {
     return {
       loading: true,
       isDelete: false,
+      permissionLoading: false,
       roleList: [],
       roleIdList: [],
       keywords: null,
@@ -219,12 +219,6 @@ export default {
       listCategoryPermissions().then(data => {
         this.permissionList = data.data
       })
-
-      this.roleForm = {
-        name: '',
-        description: '',
-        status: '1'
-      }
       // this.axios.get('/api/admin/role/menus').then(({ data }) => {
       //   this.menuList = data.data
       // })
@@ -303,33 +297,40 @@ export default {
       this.roleMenu = true
     },
     openResourceModel(role) {
-      // this.$nextTick(function() {
-      //   this.$refs.resourceTree.setCheckedKeys([])
-      // })
+      this.$nextTick(function() {
+        this.$refs.resourceTree.setCheckedKeys([])
+      })
+      this.permissionLoading = true
+      this.permissionIdList = []
       this.roleForm = JSON.parse(JSON.stringify(role))
+      listPermissions(role.id).then(data => {
+        for (const permission of data.data) {
+          this.permissionIdList.push(permission.id)
+        }
+        this.$refs.resourceTree.setCheckedKeys(this.permissionIdList)
+        this.permissionLoading = false
+      })
       this.roleResource = true
     },
     saveOrUpdateRoleResource() {
-      this.roleForm.menuIdList = null
-      this.roleForm.resourceIdList = this.$refs.resourceTree.getCheckedKeys()
-      // this.axios.post('/api/admin/role', this.roleForm).then(({ data }) => {
-      //   if (data.flag) {
-      //     this.$notify.success({
-      //       title: '成功',
-      //       message: data.message
-      //     })
-      //     this.listRoles()
-      //   } else {
-      //     this.$notify.error({
-      //       title: '失败',
-      //       message: data.message
-      //     })
-      //   }
-      //   this.roleResource = false
-      // })
+      this.permissionIdList = this.$refs.resourceTree.getCheckedKeys()
+      updatePermissions(this.roleForm.id, this.permissionIdList).then(data => {
+        this.$notify.success({
+          title: '成功',
+          message: data.message
+        })
+        this.roleResource = false
+        this.listRoles()
+      }).catch(error => {
+        this.$notify.error({
+          title: '失败',
+          message: error.message
+        })
+        this.roleResource = false
+      })
     },
     saveOrUpdateRoleMenu() {
-      if (this.roleForm.name.trim() === '') {
+      if (this.roleForm.name === '' || this.roleForm.name === undefined) {
         this.$message.error('角色名不能为空')
         return false
       }

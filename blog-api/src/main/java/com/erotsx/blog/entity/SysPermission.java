@@ -11,6 +11,7 @@ public class SysPermission {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long categoryId;
 
     private String name;

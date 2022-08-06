@@ -2,7 +2,10 @@ package com.erotsx.blog.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.erotsx.blog.bo.AdminUserDetails;
+import com.erotsx.blog.dao.SysUserInfoMapper;
 import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.entity.SysUser;
@@ -12,6 +15,7 @@ import com.erotsx.blog.service.SysUserInfoService;
 import com.erotsx.blog.service.SysUserService;
 import com.erotsx.blog.service.ThreadService;
 import com.erotsx.blog.utils.ImgBedUtils;
+import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.SysUserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -37,6 +43,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Resource
     private SysUserInfoService sysUserInfoService;
+
+    @Resource
+    private SysUserInfoMapper sysUserInfoMapper;
 
     @Resource
     private ThreadService threadService;
@@ -109,6 +118,78 @@ public class SysUserServiceImpl implements SysUserService {
         BeanUtils.copyProperties(sysUser, sysUserVo);
         BeanUtils.copyProperties(sysUserInfo, sysUserVo);
         return sysUserVo;
+    }
+
+    /**
+     * 根据关键词分页搜索用户信息
+     *
+     * @param keyword  昵称关键词
+     * @param page     page
+     * @param pageSize pageSize
+     * @return 用户信息列表
+     */
+    @Override
+    public PageVo<SysUserVo> search(String keyword, int page, int pageSize) {
+        LambdaQueryWrapper<SysUserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        if (!StringUtils.isBlank(keyword)) {
+            queryWrapper.like(SysUserInfo::getNickname, keyword);
+        }
+        Page<SysUserInfo> userInfoPage = sysUserInfoMapper.selectPage(new Page<>(page, pageSize), queryWrapper);
+        List<SysUserVo> list = new ArrayList<>();
+        for (SysUserInfo sysUserInfo : userInfoPage.getRecords()) {
+            SysUserVo sysUserVo = new SysUserVo();
+            BeanUtils.copyProperties(sysUserInfo, sysUserVo);
+            BeanUtils.copyProperties(sysUserMapper.selectById(sysUserInfo.getUserId()), sysUserVo);
+            sysUserVo.setRoleList(listRoles(sysUserInfo.getUserId()));
+            list.add(sysUserVo);
+        }
+        return new PageVo<>(list, userInfoPage.getTotal());
+    }
+
+    /**
+     * 获取用户角色
+     *
+     * @param id 用户id
+     * @return 角色列表
+     */
+    @Override
+    public List<SysRole> listRoles(Long id) {
+        return sysUserMapper.listRoles(id);
+    }
+
+    /**
+     * 修改用户角色
+     *
+     * @param userId     用户id
+     * @param roleIdList 角色id列表
+     */
+    @Override
+    public void updateRole(Long userId, List<Long> roleIdList) {
+        sysUserMapper.deleteRoleRelation(userId);
+        sysUserMapper.insertRoleRelation(userId, roleIdList);
+    }
+
+    /**
+     * 修改用户
+     *
+     * @param sysUser user
+     */
+    @Override
+    public void update(SysUser sysUser) {
+        sysUserMapper.updateById(sysUser);
+    }
+
+    /**
+     * 修改用户信息
+     *
+     * @param id          用户id
+     * @param sysUserInfo 用户信息
+     */
+    @Override
+    public void updateInfo(Long id, SysUserInfo sysUserInfo) {
+        LambdaUpdateWrapper<SysUserInfo> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SysUserInfo::getUserId, id);
+        sysUserInfoMapper.update(sysUserInfo, updateWrapper);
     }
 
 }

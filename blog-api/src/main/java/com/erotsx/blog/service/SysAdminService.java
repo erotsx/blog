@@ -17,19 +17,4 @@ public interface SysAdminService {
 
     UserDetails loadUserByUsername(String username);
 
-    /**
-     * 修改用户角色
-     *
-     * @param userId     用户id
-     * @param roleIdList 角色id列表
-     */
-    void updateRole(Long userId, List<Long> roleIdList);
-
-    /**
-     * 获取用户角色
-     *
-     * @param id 用户id
-     * @return 角色列表
-     */
-    List<SysRole> listRoles(Long id);
 }

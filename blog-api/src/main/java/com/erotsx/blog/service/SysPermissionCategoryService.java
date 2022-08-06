@@ -33,4 +33,12 @@ public interface SysPermissionCategoryService {
      * @return 所有权限目录及其权限列表
      */
     List<SysPermissionCategoryVo> listAll();
+
+    /**
+     * 根据关键词搜索权限目录及其权限列表
+     *
+     * @param keyword 名称关键词
+     * @return 权限目录及其权限列表
+     */
+    List<SysPermissionCategoryVo> search(String keyword);
 }

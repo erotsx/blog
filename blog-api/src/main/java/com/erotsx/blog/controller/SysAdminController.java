@@ -46,27 +46,6 @@ public class SysAdminController {
         return Result.success(sysAdminService.register(adminParams), "注册成功");
     }
 
-    /**
-     * 修改用户角色
-     *
-     * @param userId     用户id
-     * @param roleIdList 角色id列表
-     * @return String
-     */
-    @PutMapping("updateRole")
-    public Result<?> updateRole(@RequestParam Long userId, @RequestParam List<Long> roleIdList) {
-        sysAdminService.updateRole(userId, roleIdList);
-        return Result.success(null, "修改成功");
-    }
 
-    /**
-     * 获取用户角色
-     *
-     * @param id 用户id
-     * @return 角色列表
-     */
-    @GetMapping("listRoles/{id}")
-    public Result<List<SysRole>> listRoles(@PathVariable("id") Long id) {
-        return Result.success(sysAdminService.listRoles(id));
-    }
+
 }

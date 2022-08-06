@@ -21,3 +21,45 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function searchUser(query) {
+  return request({
+    url: '/user/search',
+    method: 'get',
+    params: {
+      keyword: query.keyword,
+      page: query.page,
+      pageSize: query.pageSize
+    }
+  })
+}
+
+export function updateUserRole(id, data) {
+  return request({
+    url: '/user/updateRole',
+    method: 'put',
+    params: {
+      userId: id
+    },
+    data
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/user/update',
+    method: 'put',
+    data
+  })
+}
+
+export function updateUserInfo(id, data) {
+  return request({
+    url: '/user/updateInfo',
+    method: 'put',
+    params: {
+      id: id
+    },
+    data
+  })
+}

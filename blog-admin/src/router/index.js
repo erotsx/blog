@@ -137,10 +137,16 @@ export const constantRoutes = [
         meta: { title: '角色管理', icon: 'role' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'permission',
+        component: () => import('@/views/security/permission/permission'),
+        name: '接口管理',
+        meta: { title: '接口管理', icon: 'permission' }
+      },
+      {
+        path: 'user',
+        component: () => import('@/views/security/user/user'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'user' }
       }
     ]
   },

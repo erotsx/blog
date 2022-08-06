@@ -35,3 +35,4 @@ security:
     - /permission/**
     - /admin/**
     - /permissionCategory/**
+    - /user/**

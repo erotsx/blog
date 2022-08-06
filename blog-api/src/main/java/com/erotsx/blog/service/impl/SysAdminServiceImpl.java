@@ -110,29 +110,6 @@ public class SysAdminServiceImpl implements SysAdminService {
         return new AdminUserDetails(sysUser, permissionList);
     }
 
-    /**
-     * 修改用户角色
-     *
-     * @param userId     用户id
-     * @param roleIdList 角色id列表
-     */
-    @Override
-    public void updateRole(Long userId, List<Long> roleIdList) {
-        sysUserMapper.deleteRoleRelation(userId);
-        sysUserMapper.insertRoleRelation(userId, roleIdList);
-    }
-
-    /**
-     * 获取用户角色
-     *
-     * @param id 用户id
-     * @return 角色列表
-     */
-    @Override
-    public List<SysRole> listRoles(Long id) {
-        return sysUserMapper.listRoles(id);
-    }
-
     private List<SysPermission> getPermissionList(Long id) {
         return sysPermissionService.getPermissionList(id);
     }

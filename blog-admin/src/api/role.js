@@ -34,3 +34,28 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+
+export function listPermissions(id) {
+  return request({
+    url: '/role/listPermissions/' + id,
+    method: 'get'
+  })
+}
+
+export function updatePermissions(id, data) {
+  return request({
+    url: '/role/updatePermissions',
+    method: 'post',
+    params: {
+      id: id
+    },
+    data
+  })
+}
+
+export function listRoles() {
+  return request({
+    url: '/role/listAll',
+    method: 'get'
+  })
+}

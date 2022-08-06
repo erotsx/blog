@@ -7,6 +7,7 @@ import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysPermissionCategory;
 import com.erotsx.blog.service.SysPermissionCategoryService;
 import com.erotsx.blog.vo.SysPermissionCategoryVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +66,32 @@ public class SysPermissionCategoryServiceImpl implements SysPermissionCategorySe
         for (SysPermissionCategory category : categoryList) {
             SysPermissionCategoryVo sysPermissionCategoryVo = new SysPermissionCategoryVo();
             BeanUtils.copyProperties(category, sysPermissionCategoryVo);
-            sysPermissionCategoryVo.setChildren(getPermissionList(category.getId()));
+            sysPermissionCategoryVo.setChildren(getPermissionList(category.getId(), null));
             list.add(sysPermissionCategoryVo);
+        }
+        return list;
+    }
+
+    /**
+     * 根据关键词搜索权限目录及其权限列表
+     *
+     * @param keyword 名称关键词
+     * @return 权限目录及其权限列表
+     */
+    @Override
+    public List<SysPermissionCategoryVo> search(String keyword) {
+        if (StringUtils.isBlank(keyword)) {
+            return listAll();
+        }
+        List<SysPermissionCategoryVo> list = new ArrayList<>();
+        List<SysPermissionCategory> categoryList = sysPermissionCategoryMapper.selectList(new LambdaQueryWrapper<>());
+        for (SysPermissionCategory category : categoryList) {
+            SysPermissionCategoryVo sysPermissionCategoryVo = new SysPermissionCategoryVo();
+            BeanUtils.copyProperties(category, sysPermissionCategoryVo);
+            if (!getPermissionList(category.getId(), keyword).isEmpty()) {
+                sysPermissionCategoryVo.setChildren(getPermissionList(category.getId(), keyword));
+                list.add(sysPermissionCategoryVo);
+            }
         }
         return list;
     }
@@ -77,9 +102,12 @@ public class SysPermissionCategoryServiceImpl implements SysPermissionCategorySe
      * @param id 权限目录id
      * @return 权限列表
      */
-    private List<SysPermission> getPermissionList(Long id) {
+    private List<SysPermission> getPermissionList(Long id, String keyword) {
         LambdaQueryWrapper<SysPermission> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysPermission::getCategoryId, id);
+        if (!StringUtils.isBlank(keyword)) {
+            queryWrapper.like(SysPermission::getName, keyword);
+        }
         return sysPermissionMapper.selectList(queryWrapper);
     }
 }

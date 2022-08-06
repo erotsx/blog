@@ -61,4 +61,15 @@ public class SysPermissionCategoryController {
     public Result<List<SysPermissionCategoryVo>> listAll() {
         return Result.success(sysPermissionCategoryService.listAll());
     }
+
+    /**
+     * 根据关键词搜索权限目录及其权限列表
+     *
+     * @param keyword 名称关键词
+     * @return 权限目录及其权限列表
+     */
+    @GetMapping("search")
+    public Result<List<SysPermissionCategoryVo>> search(@RequestParam(required = false) String keyword) {
+        return Result.success(sysPermissionCategoryService.search(keyword));
+    }
 }
