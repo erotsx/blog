@@ -36,3 +36,4 @@ security:
     - /admin/**
     - /permissionCategory/**
     - /user/**
+    - /comment/**
