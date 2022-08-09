@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App'
 
-
+import Toast from "./components/toast/index";
 import router from './router'
 import store from './store'
 import dayjs from "dayjs";
@@ -27,6 +27,7 @@ import {formatTime} from "./utils/time";
 
 Vue.config.productionTip = false
 Vue.use(Share);
+Vue.use(Toast);
 Vue.use(animated)
 Vue.use(InfiniteLoading)
 Vue.config.devtools = true

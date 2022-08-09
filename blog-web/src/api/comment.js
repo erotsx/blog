@@ -1,18 +1,33 @@
 import request from '@/request'
 
 
-export function getCommentsByArticle(id) {
+export function getCommentsByArticle(params) {
   return request({
-    url: `/comments/article/${id}`,
-    method: 'get'
+    url: `/comment/list`,
+    method: 'get',
+    params: {
+      id: params.id,
+      page: params.page
+    }
   })
 }
 
-export function publishComment(comment,token) {
+export function publishComment(data) {
   return request({
-    headers: {'Authorization': token},
-    url: '/comments/create/change',
+    url: '/comment/publish',
     method: 'post',
-    data: comment
+    data
+  })
+}
+
+export function getReplyByParentId(params) {
+  return request({
+    url: `/comment/reply`,
+    method: 'get',
+    params: {
+      id: params.id,
+      page: params.page,
+      pageSize: params.pageSize
+    }
   })
 }

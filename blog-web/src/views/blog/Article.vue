@@ -207,10 +207,10 @@
           <!--              </div>-->
           <!--            </div>-->
           <!--          </div>-->
-          <!--          &lt;!&ndash; 分割线 &ndash;&gt;-->
-          <!--          <hr/>-->
-          <!--          &lt;!&ndash; 评论 &ndash;&gt;-->
-          <!--          <comment :type="commentType" @getCommentCount="getCommentCount"/>-->
+                    <!-- 分割线 -->
+                    <hr/>
+                    <!-- 评论 -->
+                    <comment :type="commentType"/>
         </v-card>
       </v-col>
       <!-- 侧边功能 -->
@@ -258,16 +258,16 @@
 
 <script>
 import Clipboard from "clipboard";
-// import Comment from "@/components/Comment";
+import Comment from "@/components/Comment";
 import tocbot from "tocbot";
 import {getArticle, getNewArticles} from "@/api/article";
 
 
 export default {
   // name: 'article',
-  // components: {
-  //   // Comment
-  // },
+  components: {
+    Comment
+  },
   created() {
     this.getArticle();
     this.getNewArticles();
@@ -299,8 +299,7 @@ export default {
       readTime: "",
       commentType: 1,
       articleHref: window.location.href,
-      clipboard: null,
-      commentCount: 0
+      clipboard: null
     };
   },
   methods: {
@@ -445,9 +444,6 @@ export default {
     //     .replace(/[|]*\n/, "")
     //     .replace(/&npsp;/gi, "");
     // },
-    // getCommentCount(count) {
-    //   this.commentCount = count;
-    // }
   },
   computed: {
     //   blogInfo() {

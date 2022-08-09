@@ -23,14 +23,18 @@ public class Comment {
     @Indexed
     private String userId;
 
+    private String replyUserId;
+
+    private String replyNickname;
+
     @Transient
     private String email;
-
-    private String nickname;
 
     private Date createDate;
 
     private Integer likeCounts;
+
+    private String nickname;
 
     private Integer replyCounts;
 
