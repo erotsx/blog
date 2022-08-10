@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,7 +84,16 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public void delete(String id) {
-        //TODO 回复数量-1
+        Query query = Query.query(Criteria.where("_id").is(id));
+        Comment comment = mongoTemplate.findOne(query, Comment.class);
+        assert comment != null;
+        if (!Objects.equals(comment.getParentId(), "0")) {
+            Query query1 = Query.query(Criteria.where("_id").is(comment.getParentId()));
+            Update update = new Update();
+            update.inc("replyCounts", -1);
+            mongoTemplate.updateFirst(query1, update, Comment.class);
+        }
+
         commentRepository.deleteById(id);
     }
 

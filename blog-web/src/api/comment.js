@@ -31,3 +31,10 @@ export function getReplyByParentId(params) {
     }
   })
 }
+
+export function likeComment(id) {
+  return request({
+    url: '/comment/like/' + id,
+    method: 'post'
+  })
+}

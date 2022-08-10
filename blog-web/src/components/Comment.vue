@@ -116,7 +116,7 @@
             <div class="reply-meta">
               <!-- 用户名 -->
               <div class="comment-user">
-                <span >{{ reply.nickname }}</span>
+                <span>{{ reply.nickname }}</span>
                 <span class="blogger-tag" v-if="reply.userId === 1">博主</span>
               </div>
               <!-- 信息 -->
@@ -140,7 +140,7 @@
               <p class="comment-content">
                 <!-- 回复用户名 -->
                 <template v-if="reply.replyUserId !== item.userId">
-                  <span class="ml-1"> @{{ reply.replyNickname +"，"}}</span>
+                  <span class="ml-1"> @{{ reply.replyNickname + "，" }}</span>
                 </template>
                 <span v-html="reply.content"/>
               </p>
@@ -203,7 +203,7 @@ import Reply from "./Reply";
 import Paging from "./Paging";
 import Emoji from "./Emoji";
 import EmojiList from "../assets/js/emoji";
-import {getCommentsByArticle, getReplyByParentId, publishComment} from "@/api/comment";
+import {getCommentsByArticle, getReplyByParentId, likeComment, publishComment} from "@/api/comment";
 
 export default {
   components: {
@@ -251,11 +251,11 @@ export default {
     },
     checkReplies(index, item) {
       const param = {
-        id:item.id,
-        page:1,
-        pageSize:5
+        id: item.id,
+        page: 1,
+        pageSize: 5
       }
-      getReplyByParentId(param).then(data=>{
+      getReplyByParentId(param).then(data => {
         this.$refs.check[index].style.display = "none";
         item.replyVoList = data.data.items;
         //超过1页才显示分页
@@ -266,11 +266,11 @@ export default {
     },
     changeReplyCurrent(current, index, commentId) {
       const param = {
-        id:commentId,
-        page:current,
-        pageSize:5
+        id: commentId,
+        page: current,
+        pageSize: 5
       }
-      getReplyByParentId(param).then(data=>{
+      getReplyByParentId(param).then(data => {
         this.commentList[index].replyVoList = data.data.items;
       })
     },
@@ -340,7 +340,10 @@ export default {
       })
     },
     like(comment) {
-
+      console.log(comment)
+      likeComment(comment.id).then(data => {
+        this.$set(comment, "likeCounts", comment.likeCounts + 1);
+      })
       // 发送请求
       // this.axios
       //   .post("/api/comments/" + comment.id + "/like")

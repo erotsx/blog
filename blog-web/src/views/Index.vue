@@ -1,6 +1,6 @@
 <template>
   <div v-title data-title="blog" class="blog-container">
-    <el-container>
+    <el-container class="home-container">
 
       <el-main class="me-articles">
 
@@ -119,7 +119,7 @@ export default {
 }
 
 .el-main {
-  padding: 0px;
+  padding: 0;
   line-height: 16px;
 }
 
