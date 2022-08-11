@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--MyBatis配置文件-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.erotsx.blog.dao.TagMapper">
+    <insert id="associateTagAndArticle">
+        insert into blog_article_tag(article_id, tag_id) VALUES (#{articleId},#{tagId})
+    </insert>
+    <delete id="deleteArticleTagById">
+        delete
+        from blog_article_tag
+        where tag_id = #{id}
+    </delete>
+    <delete id="deleteAssociation">
+        delete
+        from blog_article_tag
+        where article_id = #{articleId}
+    </delete>
+
+    <select id="findTagsByArticleId" parameterType="long" resultType="com.erotsx.blog.entity.Tag">
+        select id ,avatar,tag_name as tagName,create_date as createDate
+        from blog_tag
+        <where>
+            id in
+            (select tag_id from blog_article_tag where article_id = #{articleId})
+        </where>
+    </select>
+    <select id="findTagIdList" resultType="java.lang.Long">
+        select tag_id
+        from blog_article_tag at
+        group by tag_id
+        order by COUNT(1) desc limit #{limit}
+    </select>
+    <select id="findTagsByTagIdList" resultType="com.erotsx.blog.entity.Tag">
+        select id ,avatar,tag_name from blog_tag where id in
+        <foreach collection="tagIdList" item="tagId" separator="," open="(" close=")">
+            #{tagId}
+        </foreach>
+    </select>
+    <select id="getTagArticleCount" resultType="java.lang.Integer">
+        select COUNT(1) from blog_article_tag where tag_id=#{id}
+    </select>
+</mapper>
