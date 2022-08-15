@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author erotsx
+ */
 @Data
 public class ArticleVo {
 

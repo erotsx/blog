@@ -4,8 +4,10 @@ import com.erotsx.blog.entity.Category;
 import com.erotsx.blog.vo.CategoryVo;
 import com.erotsx.blog.vo.PageVo;
 
-import java.util.List;
 
+/**
+ * @author erotsx
+ */
 public interface CategoryService {
     Category getCategoryById(Long id);
 

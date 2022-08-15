@@ -3,6 +3,9 @@ package com.erotsx.blog.common.exception;
 
 import com.erotsx.blog.common.api.ErrorCode;
 
+/**
+ * @author erotsx
+ */
 public class Asserts {
 
     public static void fail(String msg) {

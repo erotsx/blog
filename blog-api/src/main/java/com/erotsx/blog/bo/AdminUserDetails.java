@@ -11,6 +11,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author erotsx
+ */
 public class AdminUserDetails implements UserDetails {
 
     private SysUser sysUser;

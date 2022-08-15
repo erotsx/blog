@@ -9,6 +9,7 @@ import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.entity.SysUser;
 import com.erotsx.blog.security.utils.JWTUtils;
+import com.erotsx.blog.service.CacheService;
 import com.erotsx.blog.service.SysAdminService;
 import com.erotsx.blog.service.SysPermissionService;
 import com.erotsx.blog.service.SysUserService;
@@ -19,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +49,32 @@ public class SysAdminServiceImpl implements SysAdminService {
     private SysPermissionService sysPermissionService;
 
     @Resource
+    private CacheService cacheService;
+
+    @Resource
     private RedisTemplate<String, String> redisTemplate;
+
+    /**
+     * 根据账号获取用户
+     *
+     * @param username 账号
+     * @return 用户
+     */
+    @Override
+    public SysUser getAdminByUserName(String username) {
+        SysUser sysUser = cacheService.getAdmin(username);
+        if (sysUser != null) {
+            return sysUser;
+        }
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getAccount, username);
+        sysUser = sysUserMapper.selectOne(queryWrapper);
+        if (sysUser != null) {
+            cacheService.setAdmin(sysUser);
+            return sysUser;
+        }
+        return null;
+    }
 
     /**
      * 用户登录
@@ -115,19 +142,19 @@ public class SysAdminServiceImpl implements SysAdminService {
         return map;
     }
 
+    /**
+     * 根据账户获取UserDetails
+     *
+     * @param username 账户
+     * @return UserDetails
+     */
     @Override
     public UserDetails loadUserByUsername(String username) {
-        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SysUser::getAccount, username);
-        SysUser sysUser = sysUserMapper.selectOne(queryWrapper);
-        if (sysUser == null) {
-            Asserts.fail("用户不存在");
+        SysUser sysUser = getAdminByUserName(username);
+        if (sysUser != null) {
+            List<SysPermission> permissionList = sysPermissionService.getPermissionList(sysUser.getId());
+            return new AdminUserDetails(sysUser, permissionList);
         }
-        List<SysPermission> permissionList = getPermissionList(sysUser.getId());
-        return new AdminUserDetails(sysUser, permissionList);
-    }
-
-    private List<SysPermission> getPermissionList(Long id) {
-        return sysPermissionService.getPermissionList(id);
+        throw new UsernameNotFoundException("账号或密码错误");
     }
 }

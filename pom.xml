@@ -28,6 +28,8 @@
         <blog-common.version>0.0.1-SNAPSHOT</blog-common.version>
         <blog-security.version>0.0.1-SNAPSHOT</blog-security.version>
         <hutool.version>5.8.4</hutool.version>
+        <docker.host>http://173.82.237.223:2375</docker.host>
+        <docker.maven.plugin.version>0.40.0</docker.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -115,6 +117,28 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>com.erotsx.blog.BlogApiApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.plugin.version}</version>
+                <configuration>
+                    <!-- Docker 远程管理地址-->
+                    <dockerHost>${docker.host}</dockerHost>
+                    <pushRegistry>http://173.82.237.223:5000</pushRegistry>
+                    <images>
+                        <image>
+                            <!--定义镜像名称-->
+                            <name>blog/${project.name}:${project.version}</name>
+                            <!--定义镜像构建行为-->
+                            <build>
+                                <dockerFileDir>${project.basedir}</dockerFileDir>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>

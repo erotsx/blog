@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author erotsx
+ */
 @Configuration
 public class BlogSecurityConfig {
 

@@ -3,6 +3,9 @@ package com.erotsx.blog.common.exception;
 
 import com.erotsx.blog.common.api.ErrorCode;
 
+/**
+ * @author erotsx
+ */
 public class ApiException extends RuntimeException {
 
     private ErrorCode errorCode;

@@ -1,5 +1,6 @@
 package com.erotsx.blog.controller;
 
+import com.erotsx.blog.common.aop.LogAnnotation;
 import com.erotsx.blog.common.api.Result;
 import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.service.SysAdminService;
@@ -9,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * @author erotsx
+ */
 @RestController
 @RequestMapping("admin")
 public class SysAdminController {

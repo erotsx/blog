@@ -1,10 +1,12 @@
 package com.erotsx.blog.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.dao.SysPermissionMapper;
 import com.erotsx.blog.dao.SysRoleMapper;
 import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysRole;
+import com.erotsx.blog.service.CacheService;
 import com.erotsx.blog.service.SysPermissionService;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Resource
     private SysRoleMapper sysRoleMapper;
+
+    @Resource
+    private CacheService cacheService;
 
     /**
      * 查询所有后台权限
@@ -68,7 +73,15 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      */
     @Override
     public List<SysPermission> getPermissionList(Long id) {
+        List<SysPermission> permissionList = cacheService.getPermissionList(id);
+        if (CollUtil.isNotEmpty(permissionList)) {
+            return permissionList;
+        }
         SysRole sysRole = sysRoleMapper.selectByUserId(id);
-        return sysPermissionMapper.selectListByRoleId(sysRole.getId());
+        permissionList = sysPermissionMapper.selectListByRoleId(sysRole.getId());
+        if (CollUtil.isNotEmpty(permissionList)) {
+            cacheService.setPermissionList(id, permissionList);
+        }
+        return permissionList;
     }
 }
