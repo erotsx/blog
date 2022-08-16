@@ -10,10 +10,7 @@ import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysRole;
 import com.erotsx.blog.entity.SysUser;
 import com.erotsx.blog.entity.SysUserInfo;
-import com.erotsx.blog.service.SysRoleService;
-import com.erotsx.blog.service.SysUserInfoService;
-import com.erotsx.blog.service.SysUserService;
-import com.erotsx.blog.service.ThreadService;
+import com.erotsx.blog.service.*;
 import com.erotsx.blog.utils.ImgBedUtils;
 import com.erotsx.blog.vo.PageVo;
 import com.erotsx.blog.vo.SysUserVo;
@@ -54,7 +51,7 @@ public class SysUserServiceImpl implements SysUserService {
     private SysRoleService sysRoleService;
 
     @Resource
-    private RedisTemplate<String, String> redisTemplate;
+    private CacheService cacheService;
 
     @Override
     public SysUser findSysUserById(Long authorId) {
@@ -170,6 +167,7 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public void updateRole(Long userId, List<Long> roleIdList) {
+        cacheService.delPermissionList(userId);
         sysUserMapper.deleteRoleRelation(userId);
         sysUserMapper.insertRoleRelation(userId, roleIdList);
     }

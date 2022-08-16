@@ -52,6 +52,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      */
     @Override
     public void update(SysPermission sysPermission) {
+        cacheService.delPermissionListByPermission(sysPermission.getId());
         sysPermissionMapper.updateById(sysPermission);
     }
 
@@ -62,6 +63,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
      */
     @Override
     public void delete(Long id) {
+        cacheService.delPermissionListByPermission(id);
         sysPermissionMapper.deleteById(id);
     }
 

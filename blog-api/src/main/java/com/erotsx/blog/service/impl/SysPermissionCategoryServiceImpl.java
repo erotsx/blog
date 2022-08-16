@@ -1,6 +1,8 @@
 package com.erotsx.blog.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.erotsx.blog.common.exception.Asserts;
 import com.erotsx.blog.dao.SysPermissionCategoryMapper;
 import com.erotsx.blog.dao.SysPermissionMapper;
 import com.erotsx.blog.entity.SysPermission;
@@ -51,6 +53,11 @@ public class SysPermissionCategoryServiceImpl implements SysPermissionCategorySe
      */
     @Override
     public void delete(Long id) {
+        LambdaQueryWrapper<SysPermission> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysPermission::getCategoryId, id);
+        if (CollUtil.isNotEmpty(sysPermissionMapper.selectList(queryWrapper))) {
+            Asserts.fail("目录下含有权限，禁止删除");
+        }
         sysPermissionCategoryMapper.deleteById(id);
     }
 

@@ -22,6 +22,8 @@ public interface SysAdminService {
      */
     SysUser getAdminByUserName(String username);
 
+
+
     /**
      * 用户登录
      *

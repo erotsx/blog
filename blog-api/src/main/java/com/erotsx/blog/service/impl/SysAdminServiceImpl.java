@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.erotsx.blog.bo.AdminUserDetails;
 import com.erotsx.blog.common.exception.Asserts;
+import com.erotsx.blog.common.service.RedisService;
 import com.erotsx.blog.dao.SysUserMapper;
 import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysRole;
@@ -52,7 +53,7 @@ public class SysAdminServiceImpl implements SysAdminService {
     private CacheService cacheService;
 
     @Resource
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisService redisService;
 
     /**
      * 根据账号获取用户
@@ -94,7 +95,7 @@ public class SysAdminServiceImpl implements SysAdminService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         String token = JWTUtils.createToken(userDetails.getUsername());
-        redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(userDetails), 1, TimeUnit.DAYS);
+        redisService.set("TOKEN_" + token, JSON.toJSONString(userDetails), 86400L);
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
         return map;
@@ -107,7 +108,7 @@ public class SysAdminServiceImpl implements SysAdminService {
      */
     @Override
     public void logout(String token) {
-        redisTemplate.delete("TOKEN_" + token);
+        redisService.del("TOKEN_" + token);
     }
 
     /**
@@ -135,11 +136,7 @@ public class SysAdminServiceImpl implements SysAdminService {
         sysUser.setPassword(encodePassword);
         sysUser.setStatus("1");
         sysUserService.insert(sysUser);
-        String token = JWTUtils.createToken(sysUser.getAccount());
-        redisTemplate.opsForValue().set("TOKEN_" + token, JSON.toJSONString(sysUser), 1, TimeUnit.DAYS);
-        Map<String, String> map = new HashMap<>();
-        map.put("token", token);
-        return map;
+        return login(adminParams);
     }
 
     /**

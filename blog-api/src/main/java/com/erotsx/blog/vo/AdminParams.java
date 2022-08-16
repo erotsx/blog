@@ -13,4 +13,5 @@ public class AdminParams {
     private String password;
 
     private String nickname;
+
 }

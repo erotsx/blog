@@ -6,6 +6,7 @@ import com.erotsx.blog.dao.SysPermissionMapper;
 import com.erotsx.blog.dao.SysRoleMapper;
 import com.erotsx.blog.entity.SysPermission;
 import com.erotsx.blog.entity.SysRole;
+import com.erotsx.blog.service.CacheService;
 import com.erotsx.blog.service.SysRoleService;
 import com.erotsx.blog.vo.PageVo;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,9 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Resource
     private SysPermissionMapper sysPermissionMapper;
+
+    @Resource
+    private CacheService cacheService;
 
     /**
      * 根据角色名称获取角色
@@ -53,6 +57,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      */
     @Override
     public void update(SysRole sysRole) {
+        cacheService.delPermissionListByRole(sysRole.getId());
         sysRoleMapper.updateById(sysRole);
     }
 
@@ -63,6 +68,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      */
     @Override
     public void delete(Long id) {
+        cacheService.delPermissionListByRole(id);
         sysRoleMapper.deleteById(id);
     }
 
@@ -95,6 +101,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      */
     @Override
     public void updatePermissions(Long id, List<Long> permissionIdList) {
+        cacheService.delPermissionListByRole(id);
         sysRoleMapper.deletePermissionRelation(id);
         sysRoleMapper.insertPermissionRelation(id, permissionIdList);
     }
