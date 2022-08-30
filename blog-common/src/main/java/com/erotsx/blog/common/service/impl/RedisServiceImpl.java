@@ -26,6 +26,16 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public Long add(String key, Object... value) {
+        return redisTemplate.opsForHyperLogLog().add(key, value);
+    }
+
+    @Override
+    public Long size(String key) {
+        return redisTemplate.opsForHyperLogLog().size(key);
+    }
+
+    @Override
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }

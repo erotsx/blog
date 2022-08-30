@@ -3,6 +3,7 @@ package com.erotsx.blog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.erotsx.blog.common.service.RedisService;
 import com.erotsx.blog.dao.ArticleBodyMapper;
 import com.erotsx.blog.dao.ArticleMapper;
 import com.erotsx.blog.entity.Article;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author erotsx
@@ -50,6 +52,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private RedisService redisService;
 
     /**
      * 根据是否置顶，创建时间返回文章列表
@@ -86,11 +91,12 @@ public class ArticleServiceImpl implements ArticleService {
     public List<ArticleVo> getHotArticles(int limit) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Article::getStatus, "已发布");
-        queryWrapper.orderByDesc(Article::getViewCounts);
         queryWrapper.select(Article::getId, Article::getTitle);
         queryWrapper.last("limit " + limit);
         List<Article> articles = articleMapper.selectList(queryWrapper);
-        return getArticleVoList(articles);
+        return getArticleVoList(articles.stream()
+                .sorted(((o1, o2) -> o2.getViewCounts() - o1.getViewCounts()))
+                .collect(Collectors.toList()));
 
     }
 
@@ -123,6 +129,7 @@ public class ArticleServiceImpl implements ArticleService {
         ArticleVo articleVo = getArticleVo(article);
         articleVo.setBody(getArticleBodyById(article.getBodyId()));
         threadService.updateViewCount(article);
+        articleVo.setViewCounts((int) (articleVo.getViewCounts() + redisService.size("articleId_" + article.getId())));
         return articleVo;
     }
 

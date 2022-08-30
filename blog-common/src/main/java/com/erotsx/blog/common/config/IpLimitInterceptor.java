@@ -26,7 +26,7 @@ public class IpLimitInterceptor implements HandlerInterceptor {
     /**
      * 访问次数限制
      */
-    private static final long LIMIT_TIME = 3;
+    private static final long LIMIT_TIME = 100;
 
     /**
      * Ip封禁时间 单位：秒

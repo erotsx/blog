@@ -44,6 +44,11 @@ public class PhotoController {
         return Result.success(photoService.uploadPhotos(files, id), "上传成功");
     }
 
+//    @PostMapping("upload/local")
+//    public Result<List<String>> localUpload(){
+//
+//    }
+
     /**
      * 插入图片到相册
      *

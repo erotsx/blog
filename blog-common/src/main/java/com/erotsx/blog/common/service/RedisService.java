@@ -26,6 +26,23 @@ public interface RedisService {
     void set(String key, Object value);
 
     /**
+     * 计数
+     *
+     * @param key   key
+     * @param value value
+     * @return Long
+     */
+    Long add(String key, Object... value);
+
+    /**
+     * 获取总数
+     *
+     * @param key key
+     * @return 总数
+     */
+    Long size(String key);
+
+    /**
      * 获取属性
      *
      * @param key 键
