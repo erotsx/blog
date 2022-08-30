@@ -29,6 +29,7 @@
         <blog-security.version>0.0.1-SNAPSHOT</blog-security.version>
         <hutool.version>5.8.4</hutool.version>
         <docker.host>http://173.82.237.223:2375</docker.host>
+        <docker.registry>173.82.237.223:5000</docker.registry>
         <docker.maven.plugin.version>0.40.0</docker.maven.plugin.version>
     </properties>
 
@@ -128,7 +129,7 @@
                 <configuration>
                     <!-- Docker 远程管理地址-->
                     <dockerHost>${docker.host}</dockerHost>
-                    <pushRegistry>http://173.82.237.223:5000</pushRegistry>
+                    <pushRegistry>${docker.registry}</pushRegistry>
                     <images>
                         <image>
                             <!--定义镜像名称-->
